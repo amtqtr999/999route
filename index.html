@@ -417,7 +417,7 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
       <div style="font-size:18px;font-weight:900;margin-bottom:4px;">Scan to Open</div>
       <div style="font-size:12px;color:#888;margin-bottom:20px;">Share with your colleagues</div>
       <div id="qrC" style="background:white;border-radius:12px;padding:16px;display:inline-block;margin-bottom:16px;"></div>
-      <div style="font-size:11px;color:#666;margin-bottom:16px;">999route.netlify.app</div>
+      <div style="font-size:11px;color:#666;margin-bottom:16px;">amtqtr999.github.io/999route</div>
       <button onclick="hideQR()" style="width:100%;padding:13px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Close</button>
     </div>
   </div>
@@ -765,9 +765,9 @@ function showQR(){
   document.getElementById('qM').style.display='flex';
   if(qrDone)return;
   var img=document.createElement('img');
-  img.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2F999route.netlify.app&bgcolor=ffffff&color=0d0d0d&ecc=H&margin=2';
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Famtqtr999.github.io%2F999route%2F&bgcolor=ffffff&color=0d0d0d&ecc=H&margin=2';
   img.style.cssText='width:200px;height:200px;border-radius:8px;';
-  img.onerror=function(){document.getElementById('qrC').innerHTML='<div style="padding:20px;font-size:12px;color:#333;">Open: 999route.netlify.app</div>';};
+  img.onerror=function(){document.getElementById('qrC').innerHTML='<div style="padding:20px;font-size:12px;color:#333;">Open: amtqtr999.github.io/999route</div>';};
   document.getElementById('qrC').appendChild(img);
   qrDone=true;
 }
@@ -775,7 +775,7 @@ function hideQR(){document.getElementById('qM').style.display='none';}
 
 // ═══════ SHARE / REPORT ═══════
 function shareApp(){
-  var url='https://999route.netlify.app';
+  var url='https://amtqtr999.github.io/999route/';
   var msg='🚑 *RapidRoute v1.0*\nEMS Navigation App — Qatar\n\n📍 Hubs & Spokes\n🏥 Hospitals & PEC\n🎯 Nearest Hospital finder\n\n👇 Open:\n'+url;
   if(navigator.share){navigator.share({title:'RapidRoute',url:url}).catch(function(){});}
   else{window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
