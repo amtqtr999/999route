@@ -356,8 +356,125 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
 
 
   <!-- GCS SCREEN -->
-  <div class="screen" id="s-gcs">
-    <div style="background:linear-gradient(135deg,#1e3a8a,#3730a3);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;">
+  
+
+
+  <!-- SCORES SCREEN -->
+  <div class="screen" id="s-scores">
+    <div style="background:linear-gradient(135deg,#065f46,#059669);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:6px;">📊</div>
+      <div style="font-size:18px;font-weight:900;">Clinical Scores</div>
+      <div style="font-size:12px;opacity:.8;margin-top:4px;">QEWS · APGAR · GCS</div>
+    </div>
+
+    <!-- Tab selector -->
+    <div style="display:flex;gap:8px;margin-bottom:18px;">
+      <div id="sc-qews" onclick="scSwitch('qews')" style="flex:1;background:rgba(5,150,105,.2);border:2px solid #059669;border-radius:12px;padding:12px;text-align:center;cursor:pointer;">
+        <div style="font-size:20px;margin-bottom:4px;">⚠️</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;">QEWS</div>
+      </div>
+      <div id="sc-apgar" onclick="scSwitch('apgar')" style="flex:1;background:var(--sf);border:2px solid var(--br);border-radius:12px;padding:12px;text-align:center;cursor:pointer;">
+        <div style="font-size:20px;margin-bottom:4px;">👶</div>
+        <div style="font-size:13px;font-weight:700;color:var(--mu);">APGAR</div>
+      </div>
+      <div id="sc-gcs2" onclick="scSwitch('gcs2')" style="flex:1;background:var(--sf);border:2px solid var(--br);border-radius:12px;padding:12px;text-align:center;cursor:pointer;">
+        <div style="font-size:20px;margin-bottom:4px;">🧠</div>
+        <div style="font-size:13px;font-weight:700;color:var(--mu);">GCS</div>
+      </div>
+    </div>
+
+    <!-- QEWS SECTION -->
+    <div id="qewsSection">
+      <div class="stl">Vital Signs</div>
+
+      <!-- RR -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">🫁 Respiratory Rate (breaths/min)</div>
+        <div id="qews-rr" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <!-- HR -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">❤️ Heart Rate (bpm)</div>
+        <div id="qews-hr" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <!-- SBP -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">🩸 Systolic BP (mmHg)</div>
+        <div id="qews-sbp" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <!-- Temp -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">🌡️ Temperature</div>
+        <div id="qews-temp" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <!-- SpO2 -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">💨 SpO₂ on Air (%)</div>
+        <div id="qews-spo2" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <!-- AVPU -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">🧠 AVPU</div>
+        <div id="qews-avpu" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+
+      <!-- QEWS Result -->
+      <div id="qews-result" style="display:none;border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;"></div>
+      <button onclick="qewsReset()" style="width:100%;padding:13px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">🔄 Reset</button>
+    </div>
+
+    <!-- APGAR SECTION -->
+    <div id="apgarSection" style="display:none;">
+      <div class="stl">Newborn Assessment</div>
+
+      <!-- Appearance -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">🎨 Appearance (Skin Color)</div>
+        <div id="apgar-app" style="display:flex;gap:6px;"></div>
+      </div>
+      <!-- Pulse -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">❤️ Pulse (Heart Rate)</div>
+        <div id="apgar-pul" style="display:flex;gap:6px;"></div>
+      </div>
+      <!-- Grimace -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">😮 Grimace (Reflex)</div>
+        <div id="apgar-gri" style="display:flex;gap:6px;"></div>
+      </div>
+      <!-- Activity -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">💪 Activity (Muscle Tone)</div>
+        <div id="apgar-act" style="display:flex;gap:6px;"></div>
+      </div>
+      <!-- Respiration -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:6px;font-weight:600;">🫁 Respiration</div>
+        <div id="apgar-res" style="display:flex;gap:6px;"></div>
+      </div>
+
+      <!-- APGAR timing -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div style="flex:1;background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:11px;color:var(--mu);margin-bottom:4px;">1 MIN SCORE</div>
+          <div id="apgar-1min" style="font-size:32px;font-weight:900;color:#fff;">—</div>
+        </div>
+        <div style="flex:1;background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:11px;color:var(--mu);margin-bottom:4px;">5 MIN SCORE</div>
+          <div id="apgar-5min" style="font-size:32px;font-weight:900;color:#fff;">—</div>
+        </div>
+      </div>
+
+      <div id="apgar-result" style="display:none;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px;"></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="apgarSave('1min')" style="flex:1;padding:13px;border-radius:14px;border:none;background:rgba(5,150,105,.2);color:#34D399;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">📋 Save 1 min</button>
+        <button onclick="apgarSave('5min')" style="flex:1;padding:13px;border-radius:14px;border:none;background:rgba(37,99,235,.2);color:#60A5FA;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">📋 Save 5 min</button>
+      </div>
+      <button onclick="apgarReset()" style="width:100%;padding:13px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;margin-bottom:8px;">🔄 Reset</button>
+    </div>
+    <!-- GCS in Scores -->
+    <div id="gcs2Section" style="display:none;">
+<div style="background:linear-gradient(135deg,#1e3a8a,#3730a3);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;">
       <div style="font-size:36px;margin-bottom:6px;">🧠</div>
       <div style="font-size:18px;font-weight:900;">GCS Calculator</div>
       <div style="font-size:12px;opacity:.8;margin-top:4px;">Glasgow Coma Scale</div>
@@ -395,6 +512,111 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
 
     <!-- Reset -->
     <button onclick="gcsReset()" style="width:100%;padding:13px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">🔄 Reset</button>
+    </div>
+
+  </div>
+
+
+  <!-- TOOLS SCREEN -->
+  <div class="screen" id="s-tools">
+    <div style="background:linear-gradient(135deg,#1c1917,#44403c);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:6px;">🛠️</div>
+      <div style="font-size:18px;font-weight:900;">Tools</div>
+      <div style="font-size:12px;opacity:.8;margin-top:4px;">Field tools for paramedics</div>
+    </div>
+
+    <!-- Tool selector -->
+    <div style="display:flex;gap:10px;margin-bottom:18px;">
+      <div onclick="nav('resus')" style="flex:1;background:rgba(220,38,38,.15);border:2px solid rgba(220,38,38,.4);border-radius:14px;padding:16px;text-align:center;cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:6px;">⏱️</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;">Resus Timer</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">CPR clock</div>
+      </div>
+      <div id="tl-phrases" onclick="tlSwitch('phrases')" style="flex:1;background:var(--sf);border:2px solid var(--br);border-radius:14px;padding:16px;text-align:center;cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:6px;">🗣️</div>
+        <div style="font-size:13px;font-weight:800;color:var(--mu);">Phrases</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;">7 languages</div>
+      </div>
+    </div>
+
+    <!-- ── HEAT STRESS ── -->
+    
+
+    <!-- ── PATIENT PHRASES ── -->
+    <div id="tl-phrases-s" style="display:none;">
+      <div class="stl">Select Language</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;" id="pp-langs"></div>
+      <div id="pp-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- ── WOUND PHOTO ── -->
+    
+
+  </div>
+
+
+  <!-- RESUS TIMER SCREEN - LANDSCAPE OPTIMIZED -->
+  <div class="screen" id="s-resus" style="padding:10px;">
+
+    <!-- Top row: Total time + Cycle countdown -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <div style="flex:1;background:#111;border:1px solid #333;border-radius:14px;padding:14px;text-align:center;">
+        <div style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;">Total Time</div>
+        <div id="rt2-clock" style="font-size:42px;font-weight:900;font-family:monospace;color:#FF5555;letter-spacing:2px;line-height:1;">00:00</div>
+      </div>
+      <div style="flex:1;background:#111;border:2px solid rgba(37,99,235,.4);border-radius:14px;padding:14px;text-align:center;">
+        <div style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;">Cycle <span id="rt2-cyclenum" style="color:#60A5FA;">1</span></div>
+        <div id="rt2-cycle" style="font-size:42px;font-weight:900;font-family:monospace;color:#60A5FA;letter-spacing:2px;line-height:1;">02:00</div>
+        <div id="rt2-cstatus" style="font-size:10px;color:#555;margin-top:2px;">CPR</div>
+      </div>
+    </div>
+
+    <!-- Alerts row -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <div style="flex:1;background:#111;border:1px solid #333;border-radius:10px;padding:8px;text-align:center;">
+        <div style="font-size:9px;color:#555;">Adrenaline</div>
+        <div id="rt2-adr" style="font-size:16px;font-weight:800;color:#FF5555;font-family:monospace;">04:00</div>
+      </div>
+      <div style="flex:1;background:#111;border:1px solid #333;border-radius:10px;padding:8px;text-align:center;">
+        <div style="font-size:9px;color:#555;">Rhythm</div>
+        <div id="rt2-chk" style="font-size:16px;font-weight:800;color:#60A5FA;font-family:monospace;">02:00</div>
+      </div>
+      <div style="flex:1;background:#111;border:1px solid #333;border-radius:10px;padding:8px;text-align:center;">
+        <div style="font-size:9px;color:#555;">Cycles</div>
+        <div id="rt2-cycles" style="font-size:16px;font-weight:800;color:#F59E0B;font-family:monospace;">0</div>
+      </div>
+    </div>
+
+    <!-- Main controls -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <button id="rt2-startbtn" onclick="rt2Start()" style="flex:2;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#8B0000,#C0392B);color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">▶ Start</button>
+      <button onclick="rt2Reset()" style="flex:1;padding:14px;border-radius:12px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">🔄</button>
+    </div>
+
+    <!-- Event buttons row 1 -->
+    <div style="display:flex;gap:6px;margin-bottom:6px;">
+      <button onclick="rt2Log('💉 Adrenaline')"       style="flex:1;padding:9px 4px;border-radius:9px;border:none;background:rgba(220,38,38,.15);color:#FF5555;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">💉 Adrenaline</button>
+      <button onclick="rt2Log('⚡ Shock')"             style="flex:1;padding:9px 4px;border-radius:9px;border:none;background:rgba(124,58,237,.15);color:#A78BFA;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">⚡ Shock</button>
+      <button onclick="rt2Log('💓 ROSC')"              style="flex:1;padding:9px 4px;border-radius:9px;border:none;background:rgba(34,197,94,.15);color:#22C55E;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">💓 ROSC</button>
+    </div>
+    <!-- Event buttons row 2 -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button onclick="rt2Log('🔄 CPR switched')"      style="flex:1;padding:9px 4px;border-radius:9px;border:none;background:rgba(245,158,11,.15);color:#F59E0B;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">🔄 CPR</button>
+      <button onclick="rt2Log('🚨 Re-arrested')"       style="flex:1;padding:9px 4px;border-radius:9px;border:none;background:rgba(239,68,68,.2);color:#FCA5A5;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">🚨 Re-arrest</button>
+      <button onclick="rt2Log('💊 Medication given')"  style="flex:1;padding:9px 4px;border-radius:9px;border:none;background:rgba(20,184,166,.15);color:#2DD4BF;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">💊 Meds</button>
+    </div>
+
+    <!-- Log -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div class="stl" style="margin-bottom:0;">Event Log</div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="rt2Share()" style="padding:5px 12px;border-radius:8px;border:none;background:rgba(37,99,235,.2);color:#60A5FA;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">↗️ Share</button>
+        <button onclick="rt2Copy()"  style="padding:5px 12px;border-radius:8px;border:none;background:rgba(245,158,11,.2);color:#F59E0B;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">📋 Copy</button>
+      </div>
+    </div>
+    <div id="rt2-log" style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:10px;padding:10px;max-height:150px;overflow-y:auto;font-size:11px;font-family:monospace;color:#666;">
+      <div style="color:#333;text-align:center;">— No events —</div>
+    </div>
   </div>
 
   <!-- INSTALL MODAL -->
@@ -432,8 +654,11 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
     <button class="bnt" id="bn-doses" onclick="bnSwitch('doses')">
       <span class="bnt-i">💊</span><span class="bnt-l">Doses</span>
     </button>
-    <button class="bnt" id="bn-gcs" onclick="bnSwitch('gcs')">
-      <span class="bnt-i">🧠</span><span class="bnt-l">GCS</span>
+    <button class="bnt" id="bn-scores" onclick="bnSwitch('scores')">
+      <span class="bnt-i">📊</span><span class="bnt-l">Scores</span>
+    </button>
+    <button class="bnt" id="bn-tools" onclick="bnSwitch('tools')">
+      <span class="bnt-i">🛠️</span><span class="bnt-l">Tools</span>
     </button>
   </div>
 
@@ -485,7 +710,9 @@ var SC={
   nearest:{id:'s-nearest',t:'Nearest Hospital',s:'Case type & age'},
   'nearest-results':{id:'s-nearest-results',t:'Results',s:'Nearest first'},
   doses:{id:'s-doses',t:'Dose Calculator',s:'WAAFELSS'},
-  gcs:{id:'s-gcs',t:'GCS Calculator',s:'Adult / Infant'},
+  scores:{id:'s-scores',t:'Clinical Scores',s:'QEWS · APGAR · GCS'},
+  tools:{id:'s-tools',t:'Tools',s:'Timer · Phrases'},
+  resus:{id:'s-resus',t:'Resuscitation Timer',s:'CPR cycle counter'},
 };
 function showScreen(n){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
@@ -499,7 +726,7 @@ function showScreen(n){
 function nav(s){navStack.push(s);showScreen(s);}
 function goBack(){
   // If on doses tab, go home
-  if(curTab==='doses'||curTab==='gcs'){
+  if(curTab==='doses'||curTab==='scores'||curTab==='tools'){
     bnSwitch('home');
     return;
   }
@@ -799,10 +1026,16 @@ function bnSwitch(tab) {
     navStack = ['doses'];
     showScreen('doses');
     document.getElementById('bBtn').classList.add('show');
-  } else if(tab === 'gcs') {
-    navStack = ['gcs'];
-    showScreen('gcs');
+  } else if(tab === 'scores') {
+    navStack = ['scores'];
+    showScreen('scores');
     document.getElementById('bBtn').classList.add('show');
+  } else if(tab === 'tools') {
+    navStack = ['tools'];
+    showScreen('tools');
+    document.getElementById('bBtn').classList.add('show');
+    ppInit();
+    document.getElementById('tl-phrases-s').style.display='block';
   }
 }
 
@@ -1109,6 +1342,653 @@ function gcsInit() {
   gcsRenderOptions();
 }
 
+
+// ═══════ SCORES (QEWS + APGAR) ═══════
+var scTab = 'qews';
+
+// QEWS data
+var QEWS_DATA = {
+  rr:   [{s:3,l:'< 8'},{s:2,l:'8 (low)'},{s:1,l:'(low-mid)'},{s:0,l:'9–20'},{s:1,l:'21–25'},{s:2,l:'26–35'},{s:3,l:'> 36'}],
+  hr:   [{s:3,l:'< 31'},{s:2,l:'31–40'},{s:1,l:'41–50'},{s:0,l:'51–100'},{s:1,l:'101–110'},{s:2,l:'111–129'},{s:3,l:'> 129'}],
+  sbp:  [{s:3,l:'< 70'},{s:2,l:'71–89'},{s:1,l:'90–109'},{s:0,l:'110–179'},{s:1,l:'180–199'},{s:2,l:'> 200'}],
+  temp: [{s:2,l:'Cold <36°C'},{s:0,l:'Normal 36–38°C'},{s:2,l:'High >38°C'}],
+  spo2: [{s:3,l:'< 90%'},{s:2,l:'90–92%'},{s:1,l:'93–94%'},{s:0,l:'≥ 95%'}],
+  avpu: [{s:3,l:'U — Unresponsive'},{s:2,l:'P — Pain'},{s:1,l:'V — Verbal'},{s:0,l:'A — Alert'}],
+};
+
+var qewsSelIdx = {rr:null,hr:null,sbp:null,temp:null,spo2:null,avpu:null};
+
+var qewsScores = {rr:null,hr:null,sbp:null,temp:null,spo2:null,avpu:null};
+
+// APGAR data
+var APGAR_DATA = {
+  app: [{s:0,l:'Blue/Pale'},{s:1,l:'Pink (blue ext.)'},{s:2,l:'All Pink'}],
+  pul: [{s:0,l:'Absent'},{s:1,l:'< 100'},{s:2,l:'> 100'}],
+  gri: [{s:0,l:'No response'},{s:1,l:'Grimace'},{s:2,l:'Vigorous cry'}],
+  act: [{s:0,l:'Limp'},{s:1,l:'Some flexion'},{s:2,l:'Active motion'}],
+  res: [{s:0,l:'Absent'},{s:1,l:'Weak/irregular'},{s:2,l:'Strong cry'}],
+};
+
+var apgarScores = {app:null,pul:null,gri:null,act:null,res:null};
+var apgar1min = null, apgar5min = null;
+
+function scSwitch(tab) {
+  scTab = tab;
+  var map = {qews:'qewsSection',apgar:'apgarSection',gcs2:'gcs2Section'};
+  ['qews','apgar','gcs2'].forEach(function(t) {
+    var el = document.getElementById('sc-'+t);
+    if(!el) return;
+    var on = t===tab;
+    el.style.background  = on?'rgba(5,150,105,.2)':'var(--sf)';
+    el.style.borderColor = on?'#059669':'var(--br)';
+    el.querySelector('div:last-child').style.color = on?'#fff':'var(--mu)';
+    var sec = document.getElementById(map[t]);
+    if(sec) sec.style.display = on?'block':'none';
+  });
+}
+
+// QEWS rendering
+function qewsInit() {
+  Object.keys(QEWS_DATA).forEach(function(param) {
+    var el = document.getElementById('qews-'+param);
+    if(!el) return;
+    el.innerHTML = '';
+    QEWS_DATA[param].forEach(function(opt, idx) {
+      var btn = document.createElement('div');
+      var isSel = qewsScores[param] === opt.s && qewsScores[param] !== null;
+      // Check if this specific option is selected (handle duplicate scores)
+      btn.style.cssText = 'flex:1;min-width:60px;background:'+(isSel?'rgba(5,150,105,.25)':'var(--sf)')+';border:2px solid '+(isSel?'#059669':'var(--br)')+';border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer;';
+      btn.innerHTML = '<div style="font-size:10px;color:'+(isSel?'#34D399':'var(--mu)')+';">'+opt.s+'</div><div style="font-size:11px;font-weight:700;color:'+(isSel?'#fff':'var(--tx)')+';">'+opt.l+'</div>';
+      btn.dataset.param = param;
+      btn.dataset.score = opt.s;
+      btn.dataset.idx = idx;
+      btn.addEventListener('click', function(){
+        qewsScores[this.dataset.param] = parseInt(this.dataset.score);
+        qewsSelIdx[this.dataset.param] = parseInt(this.dataset.idx);
+        qewsRender();
+        qewsCalc();
+      });
+      el.appendChild(btn);
+    });
+  });
+}
+
+function qewsRender() {
+  Object.keys(QEWS_DATA).forEach(function(param) {
+    var el = document.getElementById('qews-'+param);
+    if(!el) return;
+    var btns = el.querySelectorAll('div[data-param]');
+    btns.forEach(function(btn) {
+      var s = parseInt(btn.dataset.score);
+      var l = btn.dataset.label;
+      var btnIdx = parseInt(btn.dataset.idx);
+      var isSel = qewsSelIdx[param] !== null && btnIdx === qewsSelIdx[param];
+      btn.style.background = isSel?'rgba(5,150,105,.25)':'var(--sf)';
+      btn.style.borderColor = isSel?'#059669':'var(--br)';
+      btn.querySelector('div:first-child').style.color = isSel?'#34D399':'var(--mu)';
+      btn.querySelector('div:last-child').style.color  = isSel?'#fff':'var(--tx)';
+    });
+  });
+}
+
+function qewsCalc() {
+  var vals = Object.values(qewsScores);
+  if(vals.some(function(v){return v===null;})) {
+    document.getElementById('qews-result').style.display='none'; return;
+  }
+  var total = vals.reduce(function(a,b){return a+b;},0);
+  var resEl = document.getElementById('qews-result');
+  var color, bg, emoji, msg;
+  if(total >= 4) { color='#DC2626'; bg='rgba(220,38,38,.12)'; emoji='🔴'; msg='HIGH RISK — Request CCP Assistance'; }
+  else if(total >= 2) { color='#F59E0B'; bg='rgba(245,158,11,.12)'; emoji='🟡'; msg='Moderate — Monitor closely'; }
+  else { color='#22C55E'; bg='rgba(34,197,94,.12)'; emoji='🟢'; msg='Low Risk'; }
+  resEl.style.display='block';
+  resEl.style.background=bg;
+  resEl.style.border='2px solid '+color;
+  resEl.innerHTML = '<div style="font-size:36px;margin-bottom:8px;">'+emoji+'</div>'+
+    '<div style="font-size:48px;font-weight:900;color:'+color+';">'+total+'</div>'+
+    '<div style="font-size:16px;font-weight:700;color:#fff;margin-top:4px;">'+msg+'</div>'+
+    '<div style="font-size:11px;color:var(--mu);margin-top:8px;">Score ≥4 = marker of increased clinical risk</div>';
+}
+
+function qewsReset() {
+  Object.keys(qewsScores).forEach(function(k){qewsScores[k]=null;});
+  Object.keys(qewsSelIdx).forEach(function(k){qewsSelIdx[k]=null;});
+  qewsRender();
+  document.getElementById('qews-result').style.display='none';
+}
+
+// APGAR rendering
+function apgarInit() {
+  Object.keys(APGAR_DATA).forEach(function(param) {
+    var el = document.getElementById('apgar-'+param);
+    if(!el) return;
+    el.innerHTML = '';
+    APGAR_DATA[param].forEach(function(opt) {
+      var btn = document.createElement('div');
+      var isSel = apgarScores[param] === opt.s;
+      btn.style.cssText = 'flex:1;background:'+(isSel?'rgba(5,150,105,.25)':'var(--sf)')+';border:2px solid '+(isSel?'#059669':'var(--br)')+';border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;';
+      btn.innerHTML = '<div style="font-size:18px;font-weight:900;color:'+(isSel?'#34D399':'var(--mu)')+';">'+opt.s+'</div><div style="font-size:11px;font-weight:600;color:'+(isSel?'#fff':'var(--tx)')+';">'+opt.l+'</div>';
+      btn.dataset.param = param;
+      btn.dataset.score = opt.s;
+      btn.addEventListener('click', function(){
+        apgarScores[this.dataset.param] = parseInt(this.dataset.score);
+        apgarRender();
+        apgarCalc();
+      });
+      el.appendChild(btn);
+    });
+  });
+}
+
+function apgarRender() {
+  Object.keys(APGAR_DATA).forEach(function(param) {
+    var el = document.getElementById('apgar-'+param);
+    if(!el) return;
+    var btns = el.querySelectorAll('div[data-param]');
+    btns.forEach(function(btn) {
+      var s = parseInt(btn.dataset.score);
+      var isSel = apgarScores[param] === s;
+      btn.style.background = isSel?'rgba(5,150,105,.25)':'var(--sf)';
+      btn.style.borderColor = isSel?'#059669':'var(--br)';
+      btn.querySelector('div:first-child').style.color = isSel?'#34D399':'var(--mu)';
+      btn.querySelector('div:last-child').style.color  = isSel?'#fff':'var(--tx)';
+    });
+  });
+}
+
+function apgarCalc() {
+  var vals = Object.values(apgarScores);
+  if(vals.some(function(v){return v===null;})) {
+    document.getElementById('apgar-result').style.display='none'; return;
+  }
+  var total = vals.reduce(function(a,b){return a+b;},0);
+  var resEl = document.getElementById('apgar-result');
+  var color, bg, emoji, msg;
+  if(total <= 3)      { color='#DC2626'; bg='rgba(220,38,38,.12)'; emoji='🔴'; msg='Severe distress — Immediate care'; }
+  else if(total <= 6) { color='#F59E0B'; bg='rgba(245,158,11,.12)'; emoji='🟡'; msg='Moderate distress'; }
+  else                { color='#22C55E'; bg='rgba(34,197,94,.12)'; emoji='🟢'; msg='Normal — No distress'; }
+  resEl.style.display='block';
+  resEl.style.background=bg;
+  resEl.style.border='2px solid '+color;
+  resEl.innerHTML = '<div style="font-size:36px;margin-bottom:8px;">'+emoji+'</div>'+
+    '<div style="font-size:48px;font-weight:900;color:'+color+';">'+total+'/10</div>'+
+    '<div style="font-size:15px;font-weight:700;color:#fff;margin-top:4px;">'+msg+'</div>'+
+    '<div style="font-size:10px;color:var(--mu);margin-top:8px;">0–3: Severe · 4–6: Moderate · 7–10: Normal</div>';
+  return total;
+}
+
+function apgarSave(timing) {
+  var vals = Object.values(apgarScores);
+  if(vals.some(function(v){return v===null;})) { showToast('⚠️ Complete all fields first'); return; }
+  var total = vals.reduce(function(a,b){return a+b;},0);
+  if(timing==='1min') { apgar1min=total; document.getElementById('apgar-1min').textContent=total; }
+  else { apgar5min=total; document.getElementById('apgar-5min').textContent=total; }
+  showToast('✅ '+timing+' score saved: '+total+'/10');
+}
+
+function apgarReset() {
+  Object.keys(apgarScores).forEach(function(k){apgarScores[k]=null;});
+  apgar1min=null; apgar5min=null;
+  document.getElementById('apgar-1min').textContent='—';
+  document.getElementById('apgar-5min').textContent='—';
+  apgarRender();
+  document.getElementById('apgar-result').style.display='none';
+}
+
+function scoresInit() {
+  qewsInit();
+  apgarInit();
+}
+
+
+// ═══════ TOOLS ═══════
+var tlCur = 'timer';
+var tlMap = {phrases:'tl-phrases-s'};
+
+function tlSwitch(tool) {
+  tlCur = tool;
+  var colors = {
+    timer:   {bg:'rgba(220,38,38,.15)',  bd:'rgba(220,38,38,.4)',  tx:'#fff'},
+    heat:    {bg:'rgba(245,158,11,.15)', bd:'rgba(245,158,11,.4)', tx:'#fff'},
+    phrases: {bg:'rgba(34,197,94,.15)',  bd:'rgba(34,197,94,.4)',  tx:'#fff'},
+    wound:   {bg:'rgba(168,85,247,.15)', bd:'rgba(168,85,247,.4)', tx:'#fff'},
+  };
+  ['phrases'].forEach(function(t) {
+    var el = document.getElementById('tl-'+t);
+    var sec = document.getElementById(tlMap[t]);
+    if(!el) return;
+    var on = t===tool;
+    el.style.background  = on ? colors[t].bg  : 'var(--sf)';
+    el.style.borderColor = on ? colors[t].bd  : 'var(--br)';
+    el.querySelector('div:nth-child(2)').style.color = on ? colors[t].tx : 'var(--mu)';
+    if(sec) sec.style.display = on ? 'block' : 'none';
+  });
+}
+
+
+// ── HEAT STRESS ──
+function hsCalc() {
+  var T=parseFloat(document.getElementById('hs-temp').value);
+  var H=parseFloat(document.getElementById('hs-hum').value);
+  var resEl=document.getElementById('hs-result');
+  if(isNaN(T)||isNaN(H)){resEl.style.display='none';return;}
+  // Heat Index formula (Rothfusz)
+  var HI = -8.78469475556 + 1.61139411*T + 2.33854883889*H
+           - 0.14611605*T*H - 0.012308094*T*T
+           - 0.0164248277778*H*H + 0.002211732*T*T*H
+           + 0.00072546*T*H*H - 0.000003582*T*T*H*H;
+  HI = Math.round(HI*10)/10;
+  var color,bg,emoji,risk,advice;
+  if(HI<32){color='#22C55E';bg='rgba(34,197,94,.12)';emoji='🟢';risk='Safe';advice='Normal conditions';}
+  else if(HI<40){color='#F59E0B';bg='rgba(245,158,11,.12)';emoji='🟡';risk='Caution';advice='Heat cramps possible with prolonged exposure';}
+  else if(HI<54){color='#F97316';bg='rgba(249,115,22,.12)';emoji='🟠';risk='Extreme Caution';advice='Heat exhaustion likely — ensure hydration & cooling';}
+  else{color='#DC2626';bg='rgba(220,38,38,.12)';emoji='🔴';risk='DANGER';advice='Heat stroke likely — immediate cooling required';}
+  resEl.style.display='block';
+  resEl.style.background=bg;
+  resEl.style.border='2px solid '+color;
+  resEl.innerHTML='<div style="font-size:32px;margin-bottom:8px;">'+emoji+'</div>'+
+    '<div style="font-size:13px;color:var(--mu);">Heat Index</div>'+
+    '<div style="font-size:48px;font-weight:900;color:'+color+';">'+HI+'°C</div>'+
+    '<div style="font-size:16px;font-weight:800;color:#fff;margin-top:4px;">'+risk+'</div>'+
+    '<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;">'+advice+'</div>';
+}
+
+// ── PATIENT PHRASES ──
+var PP_LANGS = [
+  {code:'en', flag:'🇬🇧', name:'English'},
+  {code:'ar', flag:'🇸🇦', name:'العربية'},
+  {code:'tl', flag:'🇵🇭', name:'Filipino'},
+  {code:'hi', flag:'🇮🇳', name:'Hindi'},
+  {code:'ml', flag:'🇮🇳', name:'Malayalam'},
+  {code:'fa', flag:'🇮🇷', name:'فارسی'},
+  {code:'ne', flag:'🇳🇵', name:'Nepali'},
+];
+
+var PP_PHRASES = {
+  en: [
+    {q:'Where does it hurt?',              a:''},
+    {q:'How long have you felt this way?', a:''},
+    {q:'Are you on any medication?',       a:''},
+    {q:'Do you have diabetes?',            a:''},
+    {q:'Do you have heart problems?',      a:''},
+    {q:'Are you pregnant?',                a:''},
+    {q:'Try to stay calm',                 a:''},
+    {q:'I am a paramedic — I will help you', a:''},
+    {q:'Do you have any allergies?',       a:''},
+    {q:'Can you breathe normally?',        a:''},
+  ],
+  ar: [
+    {q:'أين يؤلمك؟',                        a:'Where does it hurt?'},
+    {q:'منذ متى وأنت تشعر هكذا؟',            a:'How long?'},
+    {q:'هل تتناول أي دواء؟',                a:'On medication?'},
+    {q:'هل أنت مريض بالسكري؟',              a:'Diabetes?'},
+    {q:'هل لديك مشاكل في القلب؟',           a:'Heart problems?'},
+    {q:'هل أنت حامل؟',                      a:'Pregnant?'},
+    {q:'حاول أن تبقى هادئاً',               a:'Stay calm'},
+    {q:'أنا مسعف — سأساعدك',               a:'I am a paramedic'},
+    {q:'هل لديك حساسية؟',                  a:'Allergies?'},
+    {q:'هل تستطيع التنفس بشكل طبيعي؟',     a:'Breathing OK?'},
+  ],
+  tl: [
+    {q:'Saan ka masakit?',                  a:'Where does it hurt?'},
+    {q:'Kailan pa ito nagsimula?',           a:'How long?'},
+    {q:'Umiinom ka ba ng gamot?',            a:'On medication?'},
+    {q:'Mayroon ka bang diabetes?',          a:'Diabetes?'},
+    {q:'Mayroon ka bang sakit sa puso?',     a:'Heart problems?'},
+    {q:'Buntis ka ba?',                      a:'Pregnant?'},
+    {q:'Subukan mong manatiling kalmado',    a:'Stay calm'},
+    {q:'Ako ay paramedic — tutulungan kita', a:'I am a paramedic'},
+    {q:'Mayroon ka bang allergy?',           a:'Allergies?'},
+    {q:'Makakahinga ka ba nang normal?',     a:'Breathing OK?'},
+  ],
+  hi: [
+    {q:'आपको कहाँ दर्द है?',               a:'Where does it hurt?'},
+    {q:'यह कब से हो रहा है?',               a:'How long?'},
+    {q:'क्या आप कोई दवा लेते हैं?',         a:'On medication?'},
+    {q:'क्या आपको मधुमेह है?',              a:'Diabetes?'},
+    {q:'क्या आपको दिल की बीमारी है?',       a:'Heart problems?'},
+    {q:'क्या आप गर्भवती हैं?',              a:'Pregnant?'},
+    {q:'शांत रहने की कोशिश करें',           a:'Stay calm'},
+    {q:'मैं पैरामेडिक हूँ — मदद करूँगा',   a:'I am a paramedic'},
+    {q:'क्या आपको कोई एलर्जी है?',          a:'Allergies?'},
+    {q:'क्या आप सामान्य रूप से साँस ले सकते हैं?', a:'Breathing OK?'},
+  ],
+  ml: [
+    {q:'നിങ്ങൾക്ക് എവിടെ വേദനയുണ്ട്?',      a:'Where does it hurt?'},
+    {q:'ഇത് എത്ര നാളായി?',                  a:'How long?'},
+    {q:'നിങ്ങൾ എന്തെങ്കിലും മരുന്ന് കഴിക്കുന്നുണ്ടോ?', a:'On medication?'},
+    {q:'നിങ്ങൾക്ക് പ്രമേഹം ഉണ്ടോ?',         a:'Diabetes?'},
+    {q:'ഹൃദ്രോഗം ഉണ്ടോ?',                   a:'Heart problems?'},
+    {q:'നിങ്ങൾ ഗർഭിണിയാണോ?',               a:'Pregnant?'},
+    {q:'ശാന്തമായിരിക്കാൻ ശ്രമിക്കൂ',       a:'Stay calm'},
+    {q:'ഞാൻ പാരാമെഡിക്ക് ആണ്',             a:'I am a paramedic'},
+    {q:'നിങ്ങൾക്ക് അലർജി ഉണ്ടോ?',           a:'Allergies?'},
+    {q:'സ്വാഭാവികമായി ശ്വസിക്കാൻ കഴിയുന്നുണ്ടോ?', a:'Breathing OK?'},
+  ],
+  fa: [
+    {q:'کجا درد دارید؟',                    a:'Where does it hurt?'},
+    {q:'از کِی این حال را دارید؟',           a:'How long?'},
+    {q:'آیا دارویی مصرف می‌کنید؟',          a:'On medication?'},
+    {q:'آیا دیابت دارید؟',                  a:'Diabetes?'},
+    {q:'آیا بیماری قلبی دارید؟',            a:'Heart problems?'},
+    {q:'آیا باردار هستید؟',                 a:'Pregnant?'},
+    {q:'سعی کنید آرام باشید',               a:'Stay calm'},
+    {q:'من اورژانس هستم — کمکتان می‌کنم',   a:'I am a paramedic'},
+    {q:'آیا حساسیتی دارید؟',                a:'Allergies?'},
+    {q:'آیا به‌راحتی نفس می‌کشید؟',         a:'Breathing OK?'},
+  ],
+  ne: [
+    {q:'तपाईंलाई कहाँ दुख्छ?',              a:'Where does it hurt?'},
+    {q:'कहिलेदेखि यस्तो भइरहेको छ?',        a:'How long?'},
+    {q:'के तपाईं कुनै औषधि लिनुहुन्छ?',    a:'On medication?'},
+    {q:'के तपाईंलाई मधुमेह छ?',              a:'Diabetes?'},
+    {q:'के तपाईंलाई मुटुको रोग छ?',          a:'Heart problems?'},
+    {q:'के तपाईं गर्भवती हुनुहुन्छ?',       a:'Pregnant?'},
+    {q:'शान्त रहने प्रयास गर्नुहोस्',       a:'Stay calm'},
+    {q:'म प्यारामेडिक हुँ — मद्दत गर्छु',  a:'I am a paramedic'},
+    {q:'के तपाईंलाई एलर्जी छ?',             a:'Allergies?'},
+    {q:'के तपाईं सामान्य रूपमा सास फेर्न सक्नुहुन्छ?', a:'Breathing OK?'},
+  ],
+};
+
+var ppCurLang = 'ar';
+
+function ppInit() {
+  var el = document.getElementById('pp-langs');
+  if(!el) return;
+  el.innerHTML = '';
+  PP_LANGS.forEach(function(l) {
+    var btn = document.createElement('div');
+    var on = l.code===ppCurLang;
+    btn.style.cssText='background:'+(on?'rgba(34,197,94,.2)':'var(--sf)')+';border:2px solid '+(on?'#22C55E':'var(--br)')+';border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;';
+    btn.innerHTML='<span style="font-size:18px;">'+l.flag+'</span><span style="font-size:12px;font-weight:700;color:'+(on?'#fff':'var(--mu)')+';">'+l.name+'</span>';
+    btn.dataset.lang=l.code;
+    btn.addEventListener('click',function(){
+      ppCurLang=this.dataset.lang;
+      ppInit();
+      ppRender();
+    });
+    el.appendChild(btn);
+  });
+  ppRender();
+}
+
+function ppRender() {
+  var list=document.getElementById('pp-list');
+  if(!list) return;
+  var phrases=PP_PHRASES[ppCurLang]||[];
+  list.innerHTML='';
+  phrases.forEach(function(p) {
+    var div=document.createElement('div');
+    div.style.cssText='background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:14px;cursor:pointer;';
+    div.innerHTML='<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.5;">'+p.q+'</div>'+
+      (p.a?'<div style="font-size:11px;color:var(--mu);">'+p.a+'</div>':'');
+    div.addEventListener('click',function(){
+      showToast('📋 '+(p.a||p.q));
+    });
+    list.appendChild(div);
+  });
+}
+
+// ── WOUND PHOTO ──
+var wpPhotos = [];
+
+function wpLoad(evt) {
+  var file=evt.target.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    document.getElementById('wp-img').src=e.target.result;
+    var now=new Date();
+    document.getElementById('wp-time').textContent=now.getHours()+':'+
+      (now.getMinutes()<10?'0':'')+now.getMinutes();
+    document.getElementById('wp-preview').style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function wpSave() {
+  var img=document.getElementById('wp-img').src;
+  var notes=document.getElementById('wp-notes').value;
+  var now=new Date();
+  var time=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  wpPhotos.unshift({img:img,notes:notes,time:time});
+  wpRenderGallery();
+  showToast('📸 Photo saved!');
+}
+
+function wpRenderGallery() {
+  var g=document.getElementById('wp-gallery');
+  if(!wpPhotos.length){g.innerHTML='';return;}
+  g.innerHTML='<div class="stl">Saved Photos ('+wpPhotos.length+')</div>'+
+    wpPhotos.map(function(p,i){
+      return '<div style="background:#111;border:1px solid #222;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;">'+
+        '<img src="'+p.img+'" style="width:70px;height:70px;border-radius:8px;object-fit:cover;flex-shrink:0;">'+
+        '<div style="flex:1;"><div style="font-size:11px;color:var(--mu);">'+p.time+'</div>'+
+        '<div style="font-size:12px;color:#ddd;margin-top:3px;">'+( p.notes||'No notes')+'</div></div>'+
+      '</div>';
+    }).join('');
+}
+
+function wpClear() {
+  document.getElementById('wp-preview').style.display='none';
+  document.getElementById('wp-img').src='';
+  document.getElementById('wp-notes').value='';
+  document.getElementById('wp-input').value='';
+}
+
+function toolsInit() {
+  ppInit();
+  tlSwitch('phrases');
+}
+
+
+// ═══════ RESUS TIMER v2 ═══════
+var rt2Running=false, rt2Int=null, rt2Sec=0;
+var rt2CycleSec=0, rt2CycleNum=1, rt2TotalCycles=0;
+var rt2AdrNext=240, rt2ChkNext=120;
+var rt2BeatCtx=null, rt2BeatInt=null;
+var rt2Events=[];
+var CYCLE_DUR=120; // 2 min per cycle
+
+function rt2Fmt(s){
+  var m=Math.floor(s/60),ss=s%60;
+  return (m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;
+}
+
+function rt2BeatStart(){
+  try{
+    if(!rt2BeatCtx) rt2BeatCtx=new(window.AudioContext||window.webkitAudioContext)();
+    rt2BeatInt=setInterval(function(){
+      var o=rt2BeatCtx.createOscillator();
+      var g=rt2BeatCtx.createGain();
+      o.connect(g);g.connect(rt2BeatCtx.destination);
+      o.frequency.value=900;
+      g.gain.setValueAtTime(0.25,rt2BeatCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,rt2BeatCtx.currentTime+0.06);
+      o.start(rt2BeatCtx.currentTime);
+      o.stop(rt2BeatCtx.currentTime+0.06);
+    },500); // 120 BPM = 500ms
+  }catch(e){}
+}
+
+function rt2BeatStop(){
+  if(rt2BeatInt){clearInterval(rt2BeatInt);rt2BeatInt=null;}
+}
+
+function rt2Speak(msg){
+  try{
+    if('speechSynthesis' in window){
+      window.speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(msg);
+      u.rate=0.85;u.volume=1;u.pitch=1;
+      window.speechSynthesis.speak(u);
+    }
+  }catch(e){}
+}
+
+var rt2WakeLock=null;
+
+async function rt2AcquireWake(){
+  try{
+    if('wakeLock' in navigator){
+      rt2WakeLock = await navigator.wakeLock.request('screen');
+      document.getElementById('s-resus').style.filter='brightness(1.15)';
+    }
+  }catch(e){}
+}
+
+function rt2ReleaseWake(){
+  try{
+    if(rt2WakeLock){rt2WakeLock.release();rt2WakeLock=null;}
+    document.getElementById('s-resus').style.filter='';
+  }catch(e){}
+}
+
+function rt2Start(){
+  if(rt2Running){
+    rt2Running=false;clearInterval(rt2Int);rt2BeatStop();rt2ReleaseWake();
+    document.getElementById('rt2-startbtn').textContent='▶ Resume';
+    document.getElementById('rt2-cstatus').textContent='Paused';
+  } else {
+    rt2Running=true;
+    if(rt2Sec===0){rt2Log('🚨 Resuscitation started');}
+    rt2Int=setInterval(rt2Tick,1000);
+    rt2BeatStart();
+    rt2AcquireWake();
+    document.getElementById('rt2-startbtn').textContent='⏸ Pause';
+    document.getElementById('rt2-cstatus').textContent='CPR';
+  }
+}
+
+function rt2Tick(){
+  rt2Sec++;
+  rt2CycleSec++;
+
+  // Total clock
+  document.getElementById('rt2-clock').textContent=rt2Fmt(rt2Sec);
+
+  // Cycle countdown (2min = 120s)
+  var cycleLeft=CYCLE_DUR-rt2CycleSec;
+  if(cycleLeft<=0){
+    rt2TotalCycles++;
+    rt2CycleNum++;
+    rt2CycleSec=0;
+    cycleLeft=CYCLE_DUR;
+    document.getElementById('rt2-cyclenum').textContent=rt2CycleNum;
+    document.getElementById('rt2-cycles').textContent=rt2TotalCycles;
+    rt2Log('🔁 Cycle '+rt2TotalCycles+' complete');
+  }
+  document.getElementById('rt2-cycle').textContent=rt2Fmt(cycleLeft);
+
+  // Adrenaline countdown
+  var adrLeft=rt2AdrNext-rt2Sec;
+  if(adrLeft<=0){
+    document.getElementById('rt2-adr').textContent='⚠️ DUE';
+    document.getElementById('rt2-adr').style.color='#FF5555';
+    rt2Log('⚠️ Adrenaline DUE');
+    rt2AdrNext+=240;
+    rt2Speak('Adrenaline due');
+  } else {
+    document.getElementById('rt2-adr').textContent=rt2Fmt(adrLeft);
+    document.getElementById('rt2-adr').style.color=adrLeft<=30?'#FF5555':'#FF8888';
+  }
+
+  // Rhythm check every 2 min
+  var chkLeft=rt2ChkNext-rt2Sec;
+  if(chkLeft<=0){
+    document.getElementById('rt2-chk').textContent='⚠️ DUE';
+    document.getElementById('rt2-chk').style.color='#FF5555';
+    rt2Log('⚠️ Rhythm Check DUE');
+    rt2ChkNext+=120;
+    rt2Speak('Check rhythm');
+  } else {
+    document.getElementById('rt2-chk').textContent=rt2Fmt(chkLeft);
+    document.getElementById('rt2-chk').style.color=chkLeft<=15?'#FF5555':'#60A5FA';
+  }
+}
+
+function rt2Log(msg){
+  var now=new Date();
+  var clockT=(now.getHours()<10?'0':'')+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes()+':'+(now.getSeconds()<10?'0':'')+now.getSeconds();
+  var elapsed=rt2Fmt(rt2Sec);
+  rt2Events.push({t:clockT,elapsed:elapsed,msg:msg});
+  var log=document.getElementById('rt2-log');
+  var row=document.createElement('div');
+  row.style.cssText='padding:3px 0;border-bottom:1px solid #111;color:#ccc;display:flex;gap:8px;align-items:baseline;';
+  row.innerHTML='<span style="color:#60A5FA;flex-shrink:0;min-width:44px;font-size:10px;">'+clockT+'</span><span style="color:#444;flex-shrink:0;min-width:32px;font-size:9px;">['+elapsed+']</span><span>'+msg+'</span>';
+  if(log.querySelector('div[style*="No events"]')) log.innerHTML='';
+  log.insertBefore(row,log.firstChild);
+}
+
+function rt2Reset(){
+  rt2Running=false;clearInterval(rt2Int);rt2BeatStop();rt2ReleaseWake();
+  rt2Sec=0;rt2CycleSec=0;rt2CycleNum=1;rt2TotalCycles=0;
+  rt2AdrNext=240;rt2ChkNext=120;rt2Events=[];
+  document.getElementById('rt2-clock').textContent='00:00';
+  document.getElementById('rt2-cycle').textContent='02:00';
+  document.getElementById('rt2-cyclenum').textContent='1';
+  document.getElementById('rt2-cycles').textContent='0';
+  document.getElementById('rt2-adr').textContent='04:00';
+  document.getElementById('rt2-adr').style.color='#FF5555';
+  document.getElementById('rt2-chk').textContent='02:00';
+  document.getElementById('rt2-chk').style.color='#60A5FA';
+  document.getElementById('rt2-startbtn').textContent='▶ Start';
+  document.getElementById('rt2-cstatus').textContent='CPR';
+  document.getElementById('rt2-log').innerHTML='<div style="color:#333;text-align:center;">— No events —</div>';
+}
+
+function rt2GetLogText(){
+  if(!rt2Events.length) return 'No events recorded.';
+  var now=new Date();
+  var date=now.toLocaleDateString()+' '+now.toLocaleTimeString();
+  var lines=['RapidRoute — Resuscitation Log','Date: '+date,'Total Time: '+rt2Fmt(rt2Sec),'Cycles: '+rt2TotalCycles,'','Clock     [Elapsed]  Event','--------  ---------  -----'];
+  rt2Events.slice().reverse().forEach(function(e){
+    lines.push(e.t+'  ['+e.elapsed+']  '+e.msg);
+  });
+  return lines.join('\n');
+}
+
+function rt2Share(){
+  var text=rt2GetLogText();
+  try {
+    if(navigator.share){
+      navigator.share({title:'RapidRoute Resus Log',text:text});
+    } else {
+      rt2Copy();
+    }
+  } catch(e){ rt2Copy(); }
+}
+
+function rt2Copy(){
+  var text=rt2GetLogText();
+  try {
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){showToast('📋 Log copied!');}).catch(function(){rt2FallbackCopy(text);});
+    } else {
+      rt2FallbackCopy(text);
+    }
+  } catch(e){ rt2FallbackCopy(text); }
+}
+function rt2FallbackCopy(text){
+  var ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.cssText='position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try{ document.execCommand('copy'); showToast('📋 Log copied!'); }
+  catch(e){ showToast('⚠️ Copy failed'); }
+  document.body.removeChild(ta);
+}
+
+
+// Re-acquire wake lock if page becomes visible
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState==='visible' && rt2Running && !rt2WakeLock){
+    rt2AcquireWake();
+  }
+});
 // ═══════ SPLASH → APP ═══════
 setTimeout(function(){
   document.getElementById('splash').classList.add('hide');
@@ -1117,6 +1997,8 @@ setTimeout(function(){
     document.getElementById('app').classList.add('show');
     init();
     gcsInit();
+    scoresInit();
+    toolsInit();
   },800);
 },4000);
 
