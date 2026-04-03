@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RapidRoute</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RapidRoute">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#8B0000">
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#D42B2B;--rd:#8B0000;--rl:#FF5555;--bg:#0D0D0D;--sf:#181818;--br:#2A2A2A;--tx:#F0F0F0;--mu:#666;--gn:#22C55E;--bl:#3B82F6;--tl:#14B8A6;--pu:#A855F7;--am:#F59E0B;--ro:#F43F5E;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow:hidden;transition:opacity .8s;}
+#splash.hide{opacity:0;pointer-events:none;}
+.sr{position:absolute;width:70vw;height:200vh;top:-50vh;border-radius:50%;filter:blur(18px);}
+.sr.red{background:linear-gradient(90deg,rgba(200,0,0,0),rgba(200,0,0,.2) 50%,rgba(200,0,0,0));animation:swR 2s ease-in-out infinite;}
+.sr.blue{background:linear-gradient(90deg,rgba(0,80,220,0),rgba(0,80,220,.2) 50%,rgba(0,80,220,0));animation:swB 2s ease-in-out infinite;}
+@keyframes swR{0%{left:-40vw;opacity:0}15%{opacity:1}45%{left:10vw;opacity:.9}55%{left:10vw;opacity:0}100%{left:-40vw;opacity:0}}
+@keyframes swB{0%{right:-40vw;opacity:0}50%{opacity:0}65%{opacity:1}85%{right:10vw;opacity:.9}95%{right:10vw;opacity:0}100%{right:-40vw;opacity:0}}
+.fg{position:absolute;bottom:0;left:0;right:0;height:35vh;background:linear-gradient(to top,rgba(120,0,0,.12),transparent);}
+.sc{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;}
+.si{font-size:54px;margin-bottom:22px;animation:pop .6s cubic-bezier(.34,1.56,.64,1) .3s both;filter:drop-shadow(0 0 24px rgba(212,43,43,.7));}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+.st{font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;letter-spacing:4px;text-transform:uppercase;animation:up .7s ease .5s both;}
+.st .r1{color:#fff;}.st .r2{color:var(--rl);text-shadow:0 0 30px rgba(212,43,43,.7);}
+.sg{font-size:13px;color:rgba(255,255,255,.45);letter-spacing:1.5px;font-style:italic;margin-top:12px;animation:up .7s ease .75s both;}
+.sl{width:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,43,43,.7),transparent);margin:22px auto;animation:lg .8s ease 1s forwards;}
+@keyframes lg{to{width:200px}}
+.sb{width:160px;height:2px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;animation:up .5s ease 1.1s both;}
+.sf2{height:100%;width:0;background:linear-gradient(90deg,#8B0000,#FF4444,#8B0000);background-size:200%;border-radius:2px;animation:bf 2.6s ease 1.2s forwards,sh 1s linear 1.2s infinite;}
+@keyframes bf{to{width:100%}}@keyframes sh{from{background-position:100% 0}to{background-position:-100% 0}}
+.sp{position:absolute;bottom:44px;z-index:2;text-align:center;animation:up .6s ease 1.3s both;}
+.sp-l{width:40px;height:1px;background:rgba(255,255,255,.12);margin:0 auto 10px;}
+.sp p{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:2px;text-transform:uppercase;}
+.sp span{color:rgba(255,255,255,.45);font-weight:600;font-size:11px;}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* APP */
+#app{opacity:0;transition:opacity .7s;}
+#app.show{opacity:1;}
+header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(139,0,0,.5);}
+#bBtn{background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+#bBtn.show{display:flex;}
+.hi{font-size:24px;flex-shrink:0;}
+.ht h1{font-size:16px;font-weight:900;line-height:1.2;}
+.ht p{font-size:11px;opacity:.7;}
+.lv{width:8px;height:8px;background:var(--gn);border-radius:50%;margin-left:auto;flex-shrink:0;animation:lp 1.6s infinite;}
+@keyframes lp{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+
+.screen{display:none;padding:16px;}
+.screen.active{display:block;animation:si2 .25s ease;}
+@keyframes si2{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME */
+.hero{background:linear-gradient(135deg,#8B0000,#C0392B);border-radius:18px;padding:22px 20px;margin-bottom:16px;text-align:center;}
+.hero .ei{font-size:44px;margin-bottom:8px;}
+.hero h2{font-size:20px;font-weight:900;margin-bottom:4px;}
+.hero p{font-size:12px;opacity:.8;}
+.sw{position:relative;margin-bottom:14px;}
+.sw input{width:100%;background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:13px 40px 13px 44px;color:var(--tx);font-size:15px;font-family:'Inter',sans-serif;outline:none;}
+.sw input:focus{border-color:var(--red);}
+.sw .si3{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;}
+.sw .sc2{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mu);font-size:18px;cursor:pointer;display:none;}
+.mbs{display:flex;flex-direction:column;gap:10px;}
+.mb{border-radius:16px;padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;border:1px solid;}
+.mb:active{transform:scale(.98);}
+.mb.nh {background:rgba(212,43,43,.15);border-color:rgba(212,43,43,.5);}
+.mb.hb {background:rgba(212,43,43,.1); border-color:rgba(212,43,43,.35);}
+.mb.hp {background:rgba(59,130,246,.1); border-color:rgba(59,130,246,.35);}
+.mb.pc {background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.35);}
+.mb.ct {background:rgba(20,184,166,.1); border-color:rgba(20,184,166,.35);}
+.mb.rc {background:rgba(244,63,94,.1);  border-color:rgba(244,63,94,.35);}
+.mbi{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.mb.nh .mbi{background:rgba(212,43,43,.25);}
+.mb.hb .mbi{background:rgba(212,43,43,.2);}
+.mb.hp .mbi{background:rgba(59,130,246,.2);}
+.mb.pc .mbi{background:rgba(245,158,11,.2);}
+.mb.ct .mbi{background:rgba(20,184,166,.2);}
+.mb.rc .mbi{background:rgba(244,63,94,.2);}
+.mbt{flex:1;}
+.mbl{font-size:15px;font-weight:800;}
+.mbs2{font-size:11px;color:var(--mu);margin-top:2px;}
+.stl{font-size:11px;color:var(--mu);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.cb2{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--gn);font-weight:700;}
+
+/* HUB */
+.hg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.hc{background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:18px 12px;cursor:pointer;text-align:center;position:relative;overflow:hidden;}
+.hc:active{transform:scale(.96);border-color:var(--red);}
+.htb{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--rl));}
+.hbg{position:absolute;top:8px;right:8px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.hbg.gr{background:var(--mu);}
+.he{font-size:30px;margin-bottom:8px;display:block;}
+.hn{font-size:14px;font-weight:800;margin-bottom:3px;}
+.hs{font-size:11px;color:var(--mu);}
+.hhr{background:linear-gradient(135deg,#8B0000,#C0392B);border-radius:16px;padding:20px;margin-bottom:16px;display:flex;align-items:flex-start;gap:14px;}
+.hhi{font-size:42px;flex-shrink:0;}
+.hhf{flex:1;}
+.hhf h2{font-size:20px;font-weight:900;margin-bottom:4px;}
+.hhf p{font-size:12px;opacity:.8;}
+.nhb{margin-top:12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:9px 18px;border-radius:30px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;width:100%;justify-content:center;}
+.nsp{text-align:center;color:var(--mu);padding:40px 20px;font-size:14px;line-height:2;}
+.nsp span{font-size:36px;display:block;margin-bottom:8px;}
+
+/* TYPE */
+.tg{display:flex;flex-direction:column;gap:12px;}
+.tc{border-radius:16px;padding:20px 18px;cursor:pointer;display:flex;align-items:center;gap:16px;border:1px solid;}
+.tc:active{transform:scale(.98);}
+.tc.hm{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.35);}
+.tc.ot{background:rgba(165,85,247,.1);border-color:rgba(165,85,247,.35);}
+.ti{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.tc.hm .ti{background:rgba(59,130,246,.2);}
+.tc.ot .ti{background:rgba(165,85,247,.2);}
+.tl2{font-size:17px;font-weight:800;}
+.ts{font-size:12px;color:var(--mu);margin-top:3px;}
+
+/* LIST */
+.lh{border-radius:14px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.lh.rd{background:rgba(212,43,43,.12);border:1px solid rgba(212,43,43,.3);}
+.lh.bl{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);}
+.lh.pu2{background:rgba(165,85,247,.12);border:1px solid rgba(165,85,247,.3);}
+.lh.am{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);}
+.lh.tl2{background:rgba(20,184,166,.12);border:1px solid rgba(20,184,166,.3);}
+.lh.ro{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);}
+.lh-i{font-size:28px;}
+.lh-t h3{font-size:16px;font-weight:800;}
+.lh-t p{font-size:12px;opacity:.7;margin-top:2px;}
+.ll{display:flex;flex-direction:column;gap:10px;}
+.lc{background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;}
+.lc:active{transform:scale(.98);}
+.lc-i{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.lc-i.rd{background:rgba(212,43,43,.15);border:1px solid rgba(212,43,43,.3);}
+.lc-i.bl{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);}
+.lc-i.pu2{background:rgba(165,85,247,.15);border:1px solid rgba(165,85,247,.3);}
+.lc-i.am{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);}
+.lc-i.tl2{background:rgba(20,184,166,.15);border:1px solid rgba(20,184,166,.3);}
+.lc-i.ro{background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.3);}
+.li2{flex:1;cursor:pointer;}
+.ln{font-size:14px;font-weight:700;margin-bottom:2px;}
+.la{font-size:11px;color:var(--mu);}
+.la2{display:flex;gap:5px;flex-shrink:0;}
+.bn{background:rgba(212,43,43,.15);border:1px solid rgba(212,43,43,.3);color:var(--rl);padding:7px 9px;border-radius:8px;font-size:12px;cursor:pointer;}
+.bs{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#60A5FA;padding:7px 9px;border-radius:8px;font-size:12px;cursor:pointer;}
+
+/* NEAREST */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.cb3{background:var(--sf);border:2px solid var(--br);border-radius:14px;padding:14px 10px;cursor:pointer;text-align:center;}
+.cb3:active{transform:scale(.96);}
+.cb3.on{border-color:var(--red);background:rgba(212,43,43,.12);}
+.cb3 .ci{font-size:26px;margin-bottom:6px;display:block;}
+.cb3 .cl{font-size:13px;font-weight:700;}
+.ar{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.ar label{font-size:13px;color:var(--mu);font-weight:600;flex-shrink:0;}
+.ai{flex:1;background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:12px 16px;color:var(--tx);font-size:18px;font-weight:700;font-family:'Inter',sans-serif;text-align:center;outline:none;}
+.ai:focus{border-color:var(--red);}
+.so2{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.so{background:var(--sf);border:2px solid var(--br);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;}
+.so.on{border-color:var(--am);background:rgba(245,158,11,.1);}
+.sd{width:16px;height:16px;border-radius:50%;border:2px solid var(--mu);flex-shrink:0;}
+.so.on .sd{background:var(--am);border-color:var(--am);}
+.st2{font-size:13px;font-weight:600;}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.gb{background:var(--sf);border:2px solid var(--br);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;}
+.gb.on{border-color:var(--bl);background:rgba(59,130,246,.1);}
+.gb .gi{font-size:22px;margin-bottom:4px;display:block;}
+.gb .gl{font-size:12px;font-weight:700;}
+.fb{width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#8B0000,#C0392B);color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:800;cursor:pointer;}
+.fb:active{transform:scale(.98);}
+.fb:disabled{opacity:.4;cursor:not-allowed;}
+.nc{background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.nr{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nr.gd{background:var(--am);}
+.p1b{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(212,43,43,.2);color:#FF6666;margin-top:3px;}
+.p2b{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(245,158,11,.2);color:var(--am);margin-top:3px;}
+.hzb{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;margin-top:3px;margin-right:3px;}
+
+/* INSTALL */
+.im{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center;}
+.is{background:#1A1A1A;border-radius:24px 24px 0 0;padding:28px 20px 40px;width:100%;max-width:500px;border-top:1px solid #333;}
+.ih{width:40px;height:4px;background:#444;border-radius:2px;margin:0 auto 24px;}
+.stp{display:flex;align-items:center;gap:14px;background:#222;border-radius:12px;padding:14px;margin-bottom:10px;}
+.ot2{display:flex;gap:8px;margin-top:18px;}
+.ot2 button{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:13px;}
+.ot2 button.on{background:#8B0000;color:#fff;}
+.ot2 button.off{background:#2A2A2A;color:#888;}
+
+/* QR */
+.qm{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.8);align-items:center;justify-content:center;}
+.qs{background:#1A1A1A;border-radius:24px;padding:28px 24px;text-align:center;margin:20px;border:1px solid #333;max-width:320px;width:100%;}
+
+#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;border:1px solid #444;white-space:nowrap;transition:opacity .3s;}
+
+/* BOTTOM NAV */
+#bnav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:#111;border-top:1px solid #222;display:flex;height:62px;padding-bottom:env(safe-area-inset-bottom);}
+.bnt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--mu);}
+.bnt.on{color:var(--rl);}
+.bnt-i{font-size:22px;line-height:1;}
+.bnt-l{font-size:10px;font-weight:600;letter-spacing:.3px;}
+/* push content above nav */
+#app > header{top:0;}
+.screen{padding-bottom:80px;}
+
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sr red"></div>
+  <div class="sr blue"></div>
+  <div class="fg"></div>
+  <div class="sc">
+    <div class="si">🚑</div>
+    <div class="st"><span class="r1">Rapid</span><span class="r2">Route</span></div>
+    <div class="sg">Every second counts — we guide the way</div>
+    <div class="sl"></div>
+    <div class="sb"><div class="sf2"></div></div>
+  </div>
+  <div class="sp"><div class="sp-l"></div><p>Developed by <span>Ahmad Tawalbeh</span></p></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <button id="bBtn" onclick="goBack()">←</button>
+    <div class="hi">🚑</div>
+    <div class="ht"><h1 id="hT">RapidRoute</h1><p id="hS">Select a section</p></div>
+    <div class="lv"></div>
+  </header>
+
+  <!-- HOME -->
+  <div class="screen active" id="s-home">
+    <div class="hero"><div class="ei">🚑</div><h2>RapidRoute</h2><p>Every second counts — we guide the way</p></div>
+    <div class="sw">
+      <span class="si3">🔍</span>
+      <input id="gS" type="text" placeholder="Search any location..." oninput="doSearch(this.value)">
+      <button class="sc2" id="sC" onclick="clearSearch()">✕</button>
+    </div>
+    <div id="sRW" style="display:none;"><div class="stl">Results</div><div id="sR"></div></div>
+    <div id="hB">
+      <div class="mbs">
+        <div class="mb nh" onclick="nav('nearest')"><div class="mbi">🎯</div><div class="mbt"><div class="mbl">Nearest Hospital</div><div class="mbs2">Find by case type &amp; age</div></div><div style="font-size:18px;opacity:.4">→</div></div>
+        <div class="mb hb" onclick="nav('hub-list')"><div class="mbi">🏠</div><div class="mbt"><div class="mbl">Hubs &amp; Spokes</div><div class="mbs2" id="hbC"></div></div><div style="font-size:18px;opacity:.4">→</div></div>
+        <div class="mb hp" onclick="nav('hosp-select')"><div class="mbi">🏥</div><div class="mbt"><div class="mbl">Hospitals</div><div class="mbs2" id="hpC"></div></div><div style="font-size:18px;opacity:.4">→</div></div>
+        <div class="mb pc" onclick="nav('pec')"><div class="mbi">👶</div><div class="mbt"><div class="mbl">Pediatric Emergency (PEC)</div><div class="mbs2" id="pcC"></div></div><div style="font-size:18px;opacity:.4">→</div></div>
+        <div class="mb ct" onclick="nav('centers')"><div class="mbi">🏨</div><div class="mbt"><div class="mbl">Health Centers</div><div class="mbs2" id="ctC"></div></div><div style="font-size:18px;opacity:.4">→</div></div>
+        <div class="mb rc" onclick="nav('rc')"><div class="mbi">🔴</div><div class="mbt"><div class="mbl">Red Crescent</div><div class="mbs2" id="rcC"></div></div><div style="font-size:18px;opacity:.4">→</div></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <div onclick="shareApp()" style="flex:1;background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="font-size:20px;flex-shrink:0;">📤</div><div><div style="font-size:13px;font-weight:700;">Share App</div><div style="font-size:10px;color:var(--mu);">Invite a colleague</div></div></div>
+        <div onclick="showQR()" style="background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="font-size:20px;flex-shrink:0;">📱</div><div><div style="font-size:13px;font-weight:700;">QR Code</div><div style="font-size:10px;color:var(--mu);">Scan to open</div></div></div>
+        <div onclick="reportIssue()" style="background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="font-size:20px;flex-shrink:0;">🐛</div><div><div style="font-size:13px;font-weight:700;">Report</div><div style="font-size:10px;color:var(--mu);">via WhatsApp</div></div></div>
+      </div>
+      <div onclick="showInstall()" style="margin-top:10px;background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📲</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Install App</div><div style="font-size:11px;color:var(--mu);margin-top:2px;">Add to home screen</div></div><div style="font-size:16px;opacity:.3;">→</div></div>
+      <div style="text-align:center;margin-top:14px;padding-bottom:4px;font-size:11px;color:var(--mu);letter-spacing:1px;">RapidRoute <span style="color:var(--rl);font-weight:700;">v1.0</span> &nbsp;·&nbsp; Developed by Ahmad Tawalbeh</div>
+    </div>
+  </div>
+
+  <!-- HUB LIST -->
+  <div class="screen" id="s-hub-list"><div class="cb2">✅ &nbsp;All 7 hubs loaded</div><div class="stl">Main Hubs</div><div class="hg" id="hubGrid"></div></div>
+
+  <!-- HUB DETAIL -->
+  <div class="screen" id="s-hub-detail"><div class="hhr" id="hubHero"></div><div id="spokesSection"></div></div>
+
+  <!-- HOSP SELECT -->
+  <div class="screen" id="s-hosp-select">
+    <div class="stl">Select Hospital Type</div>
+    <div class="tg">
+      <div class="tc hm" onclick="nav('hmc')"><div class="ti">🏥</div><div style="flex:1;"><div class="tl2">HMC Hospitals</div><div class="ts" id="hmcC"></div></div><div style="font-size:20px;opacity:.5;">→</div></div>
+      <div class="tc ot" onclick="nav('other')"><div class="ti">🏨</div><div style="flex:1;"><div class="tl2">Other Hospitals</div><div class="ts" id="othC"></div></div><div style="font-size:20px;opacity:.5;">→</div></div>
+    </div>
+  </div>
+
+  <div class="screen" id="s-hmc"><div class="lh bl" id="hmcH"></div><div class="ll" id="hmcL"></div></div>
+  <div class="screen" id="s-other"><div class="lh pu2" id="othH"></div><div class="ll" id="othL"></div></div>
+  <div class="screen" id="s-pec"><div class="lh am" id="pecH"></div><div class="ll" id="pecL"></div></div>
+  <div class="screen" id="s-centers"><div class="lh tl2" id="ctH"></div><div class="ll" id="ctL"></div></div>
+  <div class="screen" id="s-rc"><div class="lh ro" id="rcH"></div><div class="ll" id="rcL"></div></div>
+
+  <!-- NEAREST HOSPITAL -->
+  <div class="screen" id="s-nearest">
+    <div style="background:linear-gradient(135deg,#8B0000,#C0392B);border-radius:16px;padding:18px;margin-bottom:18px;text-align:center;"><div style="font-size:32px;margin-bottom:6px;">🎯</div><div style="font-size:18px;font-weight:900;">Nearest Hospital</div><div style="font-size:12px;opacity:.8;margin-top:4px;">Select case type and patient age</div></div>
+    <div class="stl">Case Type</div>
+    <div class="cg">
+      <div class="cb3" id="cb-medical"     onclick="nhCase('medical')">    <span class="ci">🏥</span><div class="cl">Medical</div></div>
+      <div class="cb3" id="cb-trauma"      onclick="nhCase('trauma')">     <span class="ci">🚨</span><div class="cl">Trauma</div></div>
+      <div class="cb3" id="cb-obsgyne"     onclick="nhCase('obsgyne')">    <span class="ci">🤰</span><div class="cl">Obs &amp; Gyne</div></div>
+      <div class="cb3" id="cb-psychiatric" onclick="nhCase('psychiatric')"> <span class="ci">🧠</span><div class="cl">Psychiatric</div></div>
+      <div class="cb3" id="cb-stemi"       onclick="nhCase('stemi')">      <span class="ci">❤️</span><div class="cl">STEMI</div></div>
+      <div class="cb3" id="cb-stroke"      onclick="nhCase('stroke')">     <span class="ci">🧬</span><div class="cl">Stroke</div></div>
+    </div>
+    <div id="nhAS" style="display:none;"><div class="stl">Patient Age</div><div class="ar"><label>Age:</label><input class="ai" id="nhAge" type="number" min="0" max="120" placeholder="—" inputmode="numeric" oninput="nhAge2()"><label>years</label></div></div>
+    <div id="nhSS" style="display:none;"><div class="stl">Stroke Onset</div><div class="so2"><div class="so" id="so-w" onclick="nhStroke('w')"><div class="sd"></div><div class="st2">Within 15 hours — or woke up with symptoms</div></div><div class="so" id="so-o" onclick="nhStroke('o')"><div class="sd"></div><div class="st2">More than 15 hours ago</div></div></div></div>
+    <div id="nhGS" style="display:none;">
+      <div class="stl">Gender</div>
+      <div class="gg" style="margin-bottom:14px;"><div class="gb" id="gb-m" onclick="nhGender('m')"><span class="gi">👨</span><div class="gl">Male</div></div><div class="gb" id="gb-f" onclick="nhGender('f')"><span class="gi">👩</span><div class="gl">Female</div></div></div>
+      <div class="stl">Nationality</div>
+      <div class="gg"><div class="gb" id="nb-gcc" onclick="nhNat('gcc')"><span class="gi">🇶🇦</span><div class="gl">GCC</div></div><div class="gb" id="nb-non" onclick="nhNat('non')"><span class="gi">🌍</span><div class="gl">Non-GCC</div></div></div>
+    </div>
+    <button class="fb" id="nhBtn" onclick="nhFind()" disabled>📍 Find Nearest Hospital</button>
+  </div>
+
+  <!-- NEAREST RESULTS -->
+  <div class="screen" id="s-nearest-results">
+    <div id="nhRH" style="border-radius:14px;padding:16px;margin-bottom:16px;"></div>
+    <div class="stl">Eligible Hospitals — Nearest First</div>
+    <div id="nhRL"></div>
+    <button onclick="navStack.pop();showScreen('nearest')" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--sf);color:var(--mu);font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;">← New Search</button>
+  </div>
+
+
+  <!-- DOSES SCREEN -->
+  <div class="screen" id="s-doses">
+    <div style="background:linear-gradient(135deg,#1a3a6b,#2563EB);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:6px;">💊</div>
+      <div style="font-size:18px;font-weight:900;">WAAFELSS Calculator</div>
+      <div style="font-size:12px;opacity:.8;margin-top:4px;">Paediatric Emergency Doses</div>
+    </div>
+
+    <!-- Age/Weight Input -->
+    <div style="background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:18px;margin-bottom:14px;">
+      <div class="stl">Patient Age</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="dAge" type="number" min="0" max="168" placeholder="Age" inputmode="numeric"
+               style="flex:1;background:#111;border:1px solid var(--br);border-radius:10px;padding:11px 14px;color:var(--tx);font-size:16px;font-family:'Inter',sans-serif;outline:none;"
+               oninput="calcDoses()">
+        <select id="dUnit" onchange="calcDoses()"
+                style="background:#111;border:1px solid var(--br);border-radius:10px;padding:11px 14px;color:var(--tx);font-size:14px;font-family:'Inter',sans-serif;outline:none;">
+          <option value="months">Months</option>
+          <option value="years" selected>Years</option>
+        </select>
+      </div>
+      <div id="dWeight" style="display:none;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;color:#60A5FA;"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="dResults" style="display:none;">
+
+      <!-- WAAFELSS cards -->
+      <div id="dCards"></div>
+
+    </div>
+
+    <div id="dEmpty" style="text-align:center;color:var(--mu);padding:30px 0;font-size:14px;">
+      Enter patient age above to calculate doses
+    </div>
+  </div>
+
+
+  <!-- GCS SCREEN -->
+  <div class="screen" id="s-gcs">
+    <div style="background:linear-gradient(135deg,#1e3a8a,#3730a3);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:6px;">🧠</div>
+      <div style="font-size:18px;font-weight:900;">GCS Calculator</div>
+      <div style="font-size:12px;opacity:.8;margin-top:4px;">Glasgow Coma Scale</div>
+    </div>
+
+    <!-- Patient Type -->
+    <div class="stl">Patient Type</div>
+    <div style="display:flex;gap:8px;margin-bottom:18px;">
+      <div id="gpt-adult" onclick="gcsSetType('adult')"
+           style="flex:1;background:rgba(37,99,235,.2);border:2px solid #2563EB;border-radius:12px;padding:12px;text-align:center;cursor:pointer;">
+        <div style="font-size:20px;margin-bottom:4px;">👤</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;">Adult/Child</div>
+      </div>
+      <div id="gpt-infant" onclick="gcsSetType('infant')"
+           style="flex:1;background:var(--sf);border:2px solid var(--br);border-radius:12px;padding:12px;text-align:center;cursor:pointer;">
+        <div style="font-size:20px;margin-bottom:4px;">👶</div>
+        <div style="font-size:13px;font-weight:700;color:var(--mu);">Infant</div>
+      </div>
+    </div>
+
+    <!-- Eye Opening -->
+    <div class="stl">👁 Eye Opening</div>
+    <div id="gcs-eye" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;"></div>
+
+    <!-- Verbal Response -->
+    <div class="stl">💬 Verbal Response</div>
+    <div id="gcs-verbal" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;"></div>
+
+    <!-- Motor Response -->
+    <div class="stl">✋ Motor Response</div>
+    <div id="gcs-motor" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;"></div>
+
+    <!-- Result -->
+    <div id="gcs-result" style="display:none;border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;"></div>
+
+    <!-- Reset -->
+    <button onclick="gcsReset()" style="width:100%;padding:13px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">🔄 Reset</button>
+  </div>
+
+  <!-- INSTALL MODAL -->
+  <div class="im" id="iM" onclick="if(event.target===this)hideInstall()">
+    <div class="is">
+      <div class="ih"></div>
+      <div style="font-size:20px;font-weight:900;margin-bottom:6px;">Install RapidRoute</div>
+      <div style="font-size:13px;color:#888;margin-bottom:18px;">Add to your home screen</div>
+      <div id="iIG"><div style="font-size:11px;color:var(--rl);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">iPhone / iPad</div><div class="stp"><div style="font-size:22px;flex-shrink:0;">1️⃣</div><div style="font-size:13px;color:#ddd;">Tap the <b style="color:white">Share ⬆️</b> button at the bottom of Safari</div></div><div class="stp"><div style="font-size:22px;flex-shrink:0;">2️⃣</div><div style="font-size:13px;color:#ddd;">Scroll and tap <b style="color:white">Add to Home Screen</b></div></div><div class="stp"><div style="font-size:22px;flex-shrink:0;">3️⃣</div><div style="font-size:13px;color:#ddd;">Tap <b style="color:white">Add</b> — done! 🎉</div></div></div>
+      <div id="iAG" style="display:none;"><div style="font-size:11px;color:#60A5FA;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">Android</div><div class="stp"><div style="font-size:22px;flex-shrink:0;">1️⃣</div><div style="font-size:13px;color:#ddd;">Tap the <b style="color:white">Menu ⋮</b> in Chrome</div></div><div class="stp"><div style="font-size:22px;flex-shrink:0;">2️⃣</div><div style="font-size:13px;color:#ddd;">Tap <b style="color:white">Add to Home screen</b></div></div><div class="stp"><div style="font-size:22px;flex-shrink:0;">3️⃣</div><div style="font-size:13px;color:#ddd;">Tap <b style="color:white">Add</b> — done! 🎉</div></div></div>
+      <div class="ot2"><button class="on" id="iIT" onclick="switchOS('ios')">iPhone/iPad</button><button class="off" id="iAT" onclick="switchOS('android')">Android</button></div>
+      <button onclick="hideInstall()" style="width:100%;margin-top:12px;padding:14px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <!-- QR MODAL -->
+  <div class="qm" id="qM" onclick="if(event.target===this)hideQR()">
+    <div class="qs">
+      <div style="font-size:28px;margin-bottom:8px;">📱</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px;">Scan to Open</div>
+      <div style="font-size:12px;color:#888;margin-bottom:20px;">Share with your colleagues</div>
+      <div id="qrC" style="background:white;border-radius:12px;padding:16px;display:inline-block;margin-bottom:16px;"></div>
+      <div style="font-size:11px;color:#666;margin-bottom:16px;">999route.netlify.app</div>
+      <button onclick="hideQR()" style="width:100%;padding:13px;border-radius:14px;border:none;background:#2A2A2A;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bnav">
+    <button class="bnt on" id="bn-home" onclick="bnSwitch('home')">
+      <span class="bnt-i">🏠</span><span class="bnt-l">Home</span>
+    </button>
+    <button class="bnt" id="bn-doses" onclick="bnSwitch('doses')">
+      <span class="bnt-i">💊</span><span class="bnt-l">Doses</span>
+    </button>
+    <button class="bnt" id="bn-gcs" onclick="bnSwitch('gcs')">
+      <span class="bnt-i">🧠</span><span class="bnt-l">GCS</span>
+    </button>
+  </div>
+
+</div>
+
+<script>
+// ═══════ DATA ═══════
+const HUBS=[
+  {id:1,name:"Hub 1",lat:25.2751667,lng:51.5196667,spokes:[{name:"PEC",lat:25.2834482,lng:51.5052366},{name:"Omar bin Alkhattab",lat:25.2630142,lng:51.5053191},{name:"Fahad bin Jasim",lat:25.2951238,lng:51.4955099},{name:"Islamic Museum",lat:25.2919455,lng:51.5391843},{name:"Capital Police",lat:25.2759685,lng:51.5404004},{name:"The Mall",lat:25.2518107,lng:51.5371438}]},
+  {id:2,name:"Hub 2",lat:25.3358191,lng:51.5053473,spokes:[{name:"Immigration",lat:25.3179692,lng:51.4713141},{name:"Post Office",lat:25.3093355,lng:51.5174353},{name:"Exhibition",lat:25.3469985,lng:51.5242468},{name:"The Pearl",lat:25.3749655,lng:51.5461866},{name:"Qatari Diar",lat:25.3997574,lng:51.5179536},{name:"Vandome",lat:25.4066284,lng:51.5228903},{name:"Lusail Petrol Station",lat:25.3973129,lng:51.5082789},{name:"Alkheesa",lat:25.4108209,lng:51.4516897},{name:"Taiba",lat:25.3647911,lng:51.4462133},{name:"Algharrafah",lat:25.3396311,lng:51.4312026},{name:"Qatar Foundation",lat:25.3141386,lng:51.4264467},{name:"Riviera",lat:25.3483474,lng:51.4629788},{name:"Leabaib",lat:25.3801969,lng:51.4625845},{name:"Umm Salal Mohd",lat:25.4354853,lng:51.4104993}]},
+  {id:3,name:"Abu Nakhla",lat:25.1822481,lng:51.3791751,spokes:[]},
+  {id:4,name:"Hub 4",lat:25.2794156,lng:51.4320670,spokes:[{name:"Water Tank",lat:25.2473139,lng:51.4215718},{name:"Muaither HC Spoke",lat:25.2354057,lng:51.3939612},{name:"Merad",lat:25.2316698,lng:51.3850100},{name:"Abu Bakir Alsiddiq HC Spoke",lat:25.2385743,lng:51.4305609},{name:"Fassel",lat:25.2844817,lng:51.4205030},{name:"Alwajba HC Spoke",lat:25.2836508,lng:51.4019484},{name:"Alhuda School Standby",lat:25.2644520,lng:51.4053082},{name:"Alkhoor Street",lat:25.3372385,lng:51.3863182},{name:"Mall of Qatar",lat:25.3293344,lng:51.3508601},{name:"Shihaniyah HC Spoke",lat:25.3669769,lng:51.2290191},{name:"Zekreet",lat:25.4589786,lng:50.8956543},{name:"Jumailiyah HC Spoke",lat:25.6170488,lng:51.0821711},{name:"Utouriya Junction",lat:25.5055337,lng:51.2129868},{name:"Dukhan Spoke",lat:25.4186288,lng:50.7826146},{name:"Umm Bab Spoke",lat:25.2099300,lng:50.8285958}]},
+  {id:5,name:"Hub 5",lat:25.2147076,lng:51.4226772,spokes:[{name:"Hazem Mebaireek Spoke",lat:25.1807028,lng:51.4277194},{name:"Grand Mall Spoke",lat:25.1884818,lng:51.4654440},{name:"Umm Alseneem HC Spoke",lat:25.2041242,lng:51.4599703},{name:"Mesaimeer Spoke",lat:25.2244829,lng:51.5017038},{name:"Barwa City Standby",lat:25.1979953,lng:51.5087507},{name:"Ain Khaled Standby",lat:25.2230874,lng:51.4507985},{name:"Alwaab HC Spoke",lat:25.2490806,lng:51.4644386},{name:"Street 47 Standby",lat:25.1633560,lng:51.4404884},{name:"Street 52 Standby",lat:25.1631666,lng:51.4535863},{name:"Alhemaila HC Spoke",lat:25.1702349,lng:51.3980861},{name:"LVQ",lat:25.1317133,lng:51.4235204},{name:"Alikhlas School",lat:25.1943418,lng:51.3695048},{name:"Alkharara Spoke",lat:25.1777761,lng:51.3219117},{name:"Mekaines",lat:25.1378555,lng:51.2280152},{name:"Karaana Spoke",lat:24.9371700,lng:50.9907591},{name:"Abu Samra Spoke",lat:24.7565404,lng:50.8522954}]},
+  {id:6,name:"Hub 6",lat:25.6822049,lng:51.4991175,spokes:[{name:"New Khor HC Spoke",lat:25.6676434,lng:51.4851033},{name:"Daayen Spoke",lat:25.5643541,lng:51.4534247},{name:"Umm Alamad Spoke",lat:25.5185957,lng:51.4075928},{name:"Umm Salal Ali Standby",lat:25.4570215,lng:51.4047614},{name:"Alkaaban Spoke",lat:25.8754466,lng:51.3490164},{name:"Leghwairiya HC Spoke",lat:25.8437931,lng:51.2666756},{name:"Ras Lafan Spoke",lat:25.9258805,lng:51.4420062},{name:"Alghariya Spoke",lat:26.0663567,lng:51.3555995},{name:"Shamal Spoke",lat:26.1245531,lng:51.2063537}]},
+  {id:7,name:"Hub 7",lat:25.1735979,lng:51.5965219,spokes:[{name:"Almashaf Spoke",lat:25.1762234,lng:51.5809286},{name:"Alwukair Spoke",lat:25.1430144,lng:51.5122060},{name:"Berket Alawamer Standby",lat:25.0827500,lng:51.4737327},{name:"Ras Bu Fontas Spoke",lat:25.2101263,lng:51.5904028},{name:"Althumama Spoke",lat:25.2323835,lng:51.5611962},{name:"Mesaieed Spoke",lat:24.9922270,lng:51.5353431},{name:"Mesaieed Hospital Spoke",lat:25.0132587,lng:51.5582542},{name:"ATV Spoke",lat:24.8835364,lng:51.5238320},{name:"Sealine Resort Spoke",lat:24.8621230,lng:51.5147018},{name:"Sealine Hamad Clinic",lat:24.8540336,lng:51.5092958}]},
+];
+const HMC=[{name:"Hamad General Emergency",lat:25.2915090,lng:51.5029232},{name:"WWRC",lat:25.2954288,lng:51.5070776},{name:"Heart Hospital",lat:25.2912337,lng:51.5097491},{name:"Alwakra Hospital",lat:25.1666809,lng:51.5903756},{name:"Alwakra Women",lat:25.1680728,lng:51.5875643},{name:"Hazem Mebaireek Hospital",lat:25.1799850,lng:51.4288329},{name:"Aisha Bint Hamad Al-Attiyah Hospital",lat:25.6060366,lng:51.4625600},{name:"Sidra Hospital",lat:25.3235316,lng:51.4446945},{name:"Cuban Hospital",lat:25.4388088,lng:50.8596497},{name:"NCCCR",lat:25.2925563,lng:51.5115425},{name:"Rumailah Hospital",lat:25.2925245,lng:51.5118795},{name:"CDC",lat:25.2915165,lng:51.5080483},{name:"Fahad Bin Jasim Kidney Center",lat:25.2950869,lng:51.4967313},{name:"Mesaieed General Hospital",lat:25.0132876,lng:51.5582092},{name:"Ras Lafan General Hospital",lat:25.9130755,lng:51.4087143},{name:"Alkhor Hospital",lat:25.7149908,lng:51.5163805}];
+const OTH=[{name:"Aster Hospital",lat:25.2589515,lng:51.5564591},{name:"Turkish Hospital",lat:25.2672285,lng:51.5144286},{name:"The View Hospital",lat:25.3683075,lng:51.5263114},{name:"Aman Hospital",lat:25.2315012,lng:51.5742777},{name:"Alahli Hospital",lat:25.3070620,lng:51.5007573},{name:"Al Emadi Hospital",lat:25.2554116,lng:51.5344972},{name:"Doha Clinic Hospital",lat:25.2741446,lng:51.5034382},{name:"Military Medical City Hospital",lat:25.2272830,lng:51.3937758},{name:"Aspetar",lat:25.2665899,lng:51.4490450}];
+const PEC=[{name:"Sidra Pediatric Emergency",lat:25.3234989,lng:51.4446385},{name:"PEC Al Sadd",lat:25.2808028,lng:51.5065241},{name:"PEC Al Rayyan",lat:25.2793646,lng:51.4326188},{name:"PEC Al Wakra",lat:25.1662033,lng:51.5885259},{name:"PEC Aisha",lat:25.6062921,lng:51.4614576}];
+const CTR=[{name:"Old Wakra HC",lat:25.1732741,lng:51.5954323},{name:"South Alwakra HC",lat:25.1505727,lng:51.5882862},{name:"Almashaf HC",lat:25.1859479,lng:51.5676815},{name:"Althumama HC",lat:25.2322060,lng:51.5610604},{name:"Old Airport HC",lat:25.2560633,lng:51.5576648},{name:"Umm Ghuwailina HC",lat:25.2769583,lng:51.5453685},{name:"Rawdat Alkhail HC",lat:25.2754707,lng:51.5191399},{name:"Alsadd HC",lat:25.2822447,lng:51.4929444},{name:"Omar Bin Alkhattab HC",lat:25.2632289,lng:51.5056551},{name:"Mesaimeer HC",lat:25.2340991,lng:51.4829287},{name:"Alwaab HC",lat:25.2492605,lng:51.4643826},{name:"Umm Alseneem HC",lat:25.2042874,lng:51.4598520},{name:"Abu Nakhla HC",lat:25.1826171,lng:51.3797059},{name:"Alkaraana HC",lat:25.0085973,lng:51.0368502},{name:"Abu Samra HC",lat:24.7566975,lng:50.8523947},{name:"Qatar Energy HC Mesaieed",lat:24.9979885,lng:51.5495722},{name:"Madinat Khalifa HC",lat:25.3220175,lng:51.4727725},{name:"Alrayyan HC",lat:25.2803896,lng:51.4325350},{name:"Muaither HC",lat:25.2348155,lng:51.3941660},{name:"Alwajba HC",lat:25.2829486,lng:51.4019531},{name:"Alshahaniyah HC",lat:25.3673968,lng:51.2286700},{name:"QP Dukhan Medical Hospital",lat:25.4186309,lng:50.7827320},{name:"West Bay HC",lat:25.3374697,lng:51.5040434},{name:"Aljumailiya HC",lat:25.6166622,lng:51.0817708},{name:"Leghwairiya HC",lat:25.8445906,lng:51.2674685},{name:"Algharrafa HC",lat:25.3392808,lng:51.4303903},{name:"Qatar University HC",lat:25.3745020,lng:51.4794593},{name:"Leabaib HC",lat:25.3799040,lng:51.4627146},{name:"Umm Salal Mohammad HC",lat:25.4350390,lng:51.4098120},{name:"Aldaayen HC",lat:25.5635015,lng:51.4538274},{name:"New Alkhor HC",lat:25.6678574,lng:51.4849377},{name:"Alkaaban HC",lat:25.8760925,lng:51.3487371},{name:"Ras Lafan Medical Center",lat:25.9260635,lng:51.4417457},{name:"Alruwais HC",lat:26.1248625,lng:51.2064077}];
+const RC=[{name:"Mesaimeer RC",lat:25.2163516,lng:51.5290536},{name:"Hemaila RC",lat:25.1701942,lng:51.3983610},{name:"Fereej Bin Abdelaziz RC",lat:25.2767613,lng:51.5271841}];
+
+// NH hospital lists — Main 4 (NO Hazem)
+var M4=[
+  {name:"Hamad General Emergency",lat:25.2915090,lng:51.5029232},
+  {name:"Alwakra Hospital",lat:25.1666809,lng:51.5903756},
+  {name:"Aisha Bint Hamad Al-Attiyah Hospital",lat:25.6060366,lng:51.4625600},
+  {name:"Cuban Hospital",lat:25.4388088,lng:50.8596497}
+];
+var HZ={name:"Hazem Mebaireek Hospital",lat:25.1799850,lng:51.4288329};
+var M5=[{name:"Sidra Hospital",lat:25.3235316,lng:51.4446945}].concat(M4);
+var WO=[{name:"Alwakra Women",lat:25.1680728,lng:51.5875643},{name:"WWRC",lat:25.2954288,lng:51.5070776},{name:"Aisha Bint Hamad Al-Attiyah Hospital",lat:25.6060366,lng:51.4625600},{name:"Cuban Hospital",lat:25.4388088,lng:50.8596497}];
+var SI=[{name:"Sidra Hospital",lat:25.3235316,lng:51.4446945}];
+var HG=[{name:"Hamad General Emergency",lat:25.2915090,lng:51.5029232}];
+var HH=[{name:"Heart Hospital",lat:25.2912337,lng:51.5097491}];
+
+// ═══════ NAV ═══════
+var navStack=['home'], curHub=null;
+var SC={
+  home:{id:'s-home',t:'RapidRoute',s:'Select a section'},
+  'hub-list':{id:'s-hub-list',t:'Hubs',s:'Select a hub'},
+  'hub-detail':{id:'s-hub-detail',t:'',s:''},
+  'hosp-select':{id:'s-hosp-select',t:'Hospitals',s:'Select type'},
+  hmc:{id:'s-hmc',t:'HMC Hospitals',s:'Tap to open map'},
+  other:{id:'s-other',t:'Other Hospitals',s:'Tap to open map'},
+  pec:{id:'s-pec',t:'Pediatric Emergency',s:'Tap to open map'},
+  centers:{id:'s-centers',t:'Health Centers',s:'Tap to open map'},
+  rc:{id:'s-rc',t:'Red Crescent',s:'Tap to open map'},
+  nearest:{id:'s-nearest',t:'Nearest Hospital',s:'Case type & age'},
+  'nearest-results':{id:'s-nearest-results',t:'Results',s:'Nearest first'},
+  doses:{id:'s-doses',t:'Dose Calculator',s:'WAAFELSS'},
+  gcs:{id:'s-gcs',t:'GCS Calculator',s:'Adult / Infant'},
+};
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var c=SC[n];
+  document.getElementById(c.id).classList.add('active');
+  document.getElementById('hT').textContent=n==='hub-detail'?curHub.name:c.t;
+  document.getElementById('hS').textContent=n==='hub-detail'?(curHub.spokes.length+' spokes'):c.s;
+  document.getElementById('bBtn').classList.toggle('show',n!=='home');
+  window.scrollTo(0,0);
+}
+function nav(s){navStack.push(s);showScreen(s);}
+function goBack(){
+  // If on doses tab, go home
+  if(curTab==='doses'||curTab==='gcs'){
+    bnSwitch('home');
+    return;
+  }
+  navStack.pop();
+  var p=navStack[navStack.length-1];
+  showScreen(p);
+  if(p==='home')clearSearch();
+}
+
+// ═══════ HELPERS ═══════
+var SHR=[];
+function lc(item,cl,em){
+  var i=SHR.push({n:item.name,la:item.lat,lo:item.lng})-1;
+  return '<div class="lc">'+
+    '<div class="lc-i '+cl+'" onclick="openMap('+item.lat+','+item.lng+')" style="cursor:pointer">'+em+'</div>'+
+    '<div class="li2" onclick="openMap('+item.lat+','+item.lng+')">'+
+      '<div class="ln">'+item.name+'</div><div class="la">Qatar · Tap to navigate</div>'+
+    '</div>'+
+    '<div class="la2">'+
+      '<button class="bn" onclick="openMap('+item.lat+','+item.lng+')">🗺️</button>'+
+      '<button class="bs" onclick="shr('+i+')">↗️</button>'+
+    '</div>'+
+  '</div>';
+}
+function shr(i){var d=SHR[i];if(d)share(d.n,d.la,d.lo);}
+function openMap(la,lo){window.open('https://www.google.com/maps/dir/?api=1&destination='+la+','+lo+'&travelmode=driving','_blank');}
+function share(name,la,lo){
+  var url='https://www.google.com/maps?q='+la+','+lo;
+  if(navigator.share){navigator.share({title:name,text:name+' — RapidRoute',url:url}).catch(function(){});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(name+'\n'+url).then(function(){showToast('📋 Copied!');});}
+  else{showToast('🗺️ '+url);}
+}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.style.opacity='1';t.style.display='block';setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';},300);},2000);}
+function dist(a,b,c,d){var R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+
+// ═══════ INIT ═══════
+function init(){
+  var ts=HUBS.reduce(function(s,h){return s+h.spokes.length;},0);
+  document.getElementById('hbC').textContent=HUBS.length+' hubs · '+ts+' spokes';
+  document.getElementById('hpC').textContent=(HMC.length+OTH.length)+' hospitals';
+  document.getElementById('pcC').textContent=PEC.length+' locations';
+  document.getElementById('ctC').textContent=CTR.length+' health centers';
+  document.getElementById('rcC').textContent=RC.length+' locations';
+  document.getElementById('hmcC').textContent=HMC.length+' hospitals';
+  document.getElementById('othC').textContent=OTH.length+' hospitals';
+  document.getElementById('hubGrid').innerHTML=HUBS.map(function(h){
+    return '<div class="hc" onclick="openHub('+h.id+')">'+
+      '<div class="htb"></div>'+
+      '<div class="hbg '+(h.spokes.length===0?'gr':'')+'">'+( h.spokes.length>0?h.spokes.length+' spokes':'Hub')+'</div>'+
+      '<span class="he">🚑</span>'+
+      '<div class="hn">'+h.name+'</div>'+
+      '<div class="hs">'+(h.spokes.length>0?h.spokes.length+' spokes':'Main hub')+'</div>'+
+    '</div>';
+  }).join('');
+  function lh(el,cl,ic,ti,co){document.getElementById(el).innerHTML='<span class="lh-i">'+ic+'</span><div class="lh-t"><h3>'+ti+'</h3><p>'+co+'</p></div>';}
+  lh('hmcH','bl','🏥','HMC Hospitals',HMC.length+' locations');
+  lh('othH','pu2','🏨','Other Hospitals',OTH.length+' locations');
+  lh('pecH','am','👶','Pediatric Emergency Centers',PEC.length+' locations');
+  lh('ctH','tl2','🏥','Health Centers',CTR.length+' locations');
+  lh('rcH','ro','🔴','Red Crescent',RC.length+' locations');
+  document.getElementById('hmcL').innerHTML=HMC.map(function(h){return lc(h,'bl','🏥');}).join('');
+  document.getElementById('othL').innerHTML=OTH.map(function(h){return lc(h,'pu2','🏨');}).join('');
+  document.getElementById('pecL').innerHTML=PEC.map(function(h){return lc(h,'am','👶');}).join('');
+  document.getElementById('ctL').innerHTML=CTR.map(function(h){return lc(h,'tl2','🏥');}).join('');
+  document.getElementById('rcL').innerHTML=RC.map(function(h){return lc(h,'ro','🔴');}).join('');
+  buildIdx();
+}
+function openHub(id){
+  curHub=HUBS.find(function(h){return h.id===id;});
+  navStack.push('hub-detail');
+  document.getElementById('hubHero').innerHTML=
+    '<div class="hhi">🚑</div>'+
+    '<div class="hhf"><h2>'+curHub.name+'</h2>'+
+    '<p>'+(curHub.spokes.length>0?curHub.spokes.length+' spokes assigned':'Main hub — no spokes')+'</p>'+
+    '<button class="nhb" onclick="openMap('+curHub.lat+','+curHub.lng+')">🗺️ Navigate to Hub</button></div>';
+  document.getElementById('spokesSection').innerHTML=curHub.spokes.length>0
+    ?'<div class="stl">Assigned Spokes</div><div class="ll">'+curHub.spokes.map(function(s){return lc(s,'rd','📍');}).join('')+'</div>'
+    :'<div class="nsp"><span>📍</span>No spokes assigned</div>';
+  showScreen('hub-detail');
+}
+
+// ═══════ SEARCH ═══════
+var IDX=[];
+function buildIdx(){
+  IDX=[];
+  HUBS.forEach(function(h){IDX.push({name:h.name,sub:'Hub',lat:h.lat,lng:h.lng,icon:'🏠'});h.spokes.forEach(function(s){IDX.push({name:s.name,sub:'Spoke / '+h.name,lat:s.lat,lng:s.lng,icon:'📍'});});});
+  HMC.forEach(function(h){IDX.push({name:h.name,sub:'HMC Hospital',lat:h.lat,lng:h.lng,icon:'🏥'});});
+  OTH.forEach(function(h){IDX.push({name:h.name,sub:'Hospital',lat:h.lat,lng:h.lng,icon:'🏥'});});
+  PEC.forEach(function(h){IDX.push({name:h.name,sub:'Pediatric Emergency',lat:h.lat,lng:h.lng,icon:'👶'});});
+  CTR.forEach(function(h){IDX.push({name:h.name,sub:'Health Center',lat:h.lat,lng:h.lng,icon:'🏨'});});
+  RC.forEach(function(h){IDX.push({name:h.name,sub:'Red Crescent',lat:h.lat,lng:h.lng,icon:'🔴'});});
+}
+function doSearch(val){
+  var cl=document.getElementById('sC'),wr=document.getElementById('sRW'),hb=document.getElementById('hB');
+  if(!val||!val.trim()){cl.style.display='none';wr.style.display='none';hb.style.display='block';return;}
+  cl.style.display='block';wr.style.display='block';hb.style.display='none';
+  var q=val.toLowerCase(),res=IDX.filter(function(r){return r.name.toLowerCase().indexOf(q)>-1||r.sub.toLowerCase().indexOf(q)>-1;}).slice(0,20);
+  var html='';
+  if(!res.length){html='<div style="text-align:center;color:#666;padding:30px 0;font-size:14px;">No results for "'+val+'"</div>';}
+  else{
+    var si=SHR.length;
+    res.forEach(function(r){
+      var i=SHR.push({n:r.name,la:r.lat,lo:r.lng})-1;
+      html+='<div style="background:#181818;border:1px solid #2A2A2A;border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;">'+
+        '<div style="width:38px;height:38px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+r.icon+'</div>'+
+        '<div style="flex:1;cursor:pointer;" onclick="openMap('+r.lat+','+r.lng+')">'+
+          '<div style="font-size:14px;font-weight:700;color:#F0F0F0;">'+r.name+'</div>'+
+          '<div style="font-size:11px;color:#666;margin-top:2px;">'+r.sub+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:5px;">'+
+          '<button class="bn" onclick="openMap('+r.lat+','+r.lng+')">🗺️</button>'+
+          '<button class="bs" onclick="shr('+i+')">↗️</button>'+
+        '</div>'+
+      '</div>';
+    });
+  }
+  document.getElementById('sR').innerHTML=html;
+}
+function clearSearch(){var i=document.getElementById('gS');if(i)i.value='';doSearch('');}
+
+// ═══════ NEAREST HOSPITAL ═══════
+var _c=null,_s=null,_g=null,_n=null;
+
+function nhCase(t){
+  _c=t;_s=null;_g=null;_n=null;
+  document.querySelectorAll('.cb3').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('[id^="gb-"],[id^="nb-"],[id^="so-"]').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('cb-'+t).classList.add('on');
+  var na=['obsgyne','psychiatric','stemi','stroke'];
+  document.getElementById('nhAS').style.display=na.indexOf(t)>-1?'none':'block';
+  document.getElementById('nhSS').style.display=t==='stroke'?'block':'none';
+  document.getElementById('nhGS').style.display='none';
+  document.getElementById('nhAge').value='';
+  nhVal();
+}
+function nhAge2(){
+  var age=parseInt(document.getElementById('nhAge').value)||0;
+  var show=(_c==='medical'||_c==='trauma')&&age>=18;
+  document.getElementById('nhGS').style.display=show?'block':'none';
+  if(!show){_g=null;_n=null;document.querySelectorAll('[id^="gb-"],[id^="nb-"]').forEach(function(b){b.classList.remove('on');});}
+  nhVal();
+}
+function nhStroke(o){
+  _s=o;
+  document.querySelectorAll('[id^="so-"]').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('so-'+o).classList.add('on');
+  nhVal();
+}
+function nhGender(g){
+  _g=g;
+  document.querySelectorAll('[id^="gb-"]').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('gb-'+g).classList.add('on');
+  // Female: hide nationality (Hazem doesn't accept females regardless)
+  var natRow=document.getElementById('nhGS').querySelectorAll('.stl')[1];
+  var natGrid=document.getElementById('nhGS').querySelectorAll('.gg')[1];
+  if(g==='f'){
+    if(natRow)natRow.style.display='none';
+    if(natGrid)natGrid.style.display='none';
+    _n=null;
+    document.querySelectorAll('[id^="nb-"]').forEach(function(b){b.classList.remove('on');});
+  } else {
+    if(natRow)natRow.style.display='block';
+    if(natGrid)natGrid.style.display='grid';
+  }
+  nhVal();
+}
+function nhNat(n){
+  _n=n;
+  document.querySelectorAll('[id^="nb-"]').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('nb-'+n).classList.add('on');
+  nhVal();
+}
+function nhVal(){
+  var ok=false;
+  if(!_c){ok=false;}
+  else if(_c==='obsgyne'||_c==='psychiatric'||_c==='stemi'){ok=true;}
+  else if(_c==='stroke'){ok=!!_s;}
+  else{
+    var a=document.getElementById('nhAge').value;
+    var age=parseInt(a);
+    if(a===''||isNaN(age)||age<0){ok=false;}
+    else{
+      var ng=(_c==='medical'||_c==='trauma')&&age>=18;
+      ok=ng?(!!_g&&(_g==='f'||!!_n)):true;
+    }
+  }
+  document.getElementById('nhBtn').disabled=!ok;
+}
+function nhList(){
+  var age=parseInt(document.getElementById('nhAge').value)||0;
+  var mng=(_g==='m'&&_n==='non');
+  if(_c==='stemi')       return{list:HH, label:'STEMI',            color:'#DC2626'};
+  if(_c==='psychiatric') return{list:HG, label:'Psychiatric',      color:'#7C3AED'};
+  if(_c==='obsgyne')     return{list:WO, label:'Obs & Gyne',       color:'#DB2777'};
+  if(_c==='stroke'){
+    var p=_s==='w'?'Priority 1':'Priority 2';
+    return{list:HG,label:'Stroke — '+p,priority:p,color:'#EA580C'};
+  }
+  if(_c==='medical'){
+    if(age<14)  return{list:PEC,  label:'Medical (under 14)',color:'#2563EB'};
+    if(age<18)  return{list:M5,   label:'Medical (14–17)',   color:'#2563EB'};
+    var ml=M4.slice(); if(mng)ml.push(HZ);
+    return{list:ml,label:'Medical (18+)',color:'#2563EB'};
+  }
+  if(_c==='trauma'){
+    if(age<14)  return{list:SI,   label:'Trauma (under 14)',color:'#DC2626'};
+    if(age<=18) return{list:M4,   label:'Trauma (14–18)',   color:'#DC2626'};
+    var tl=M4.slice(); if(mng)tl.push(HZ);
+    return{list:tl,label:'Trauma (over 18)',color:'#DC2626'};
+  }
+  return{list:[],label:'',color:'#666'};
+}
+function nhFind(){
+  document.getElementById('nhBtn').disabled=true;
+  document.getElementById('nhBtn').textContent='📍 Getting location...';
+  if(!navigator.geolocation){nhShow(null,null);return;}
+  navigator.geolocation.getCurrentPosition(
+    function(p){nhShow(p.coords.latitude,p.coords.longitude);},
+    function(){nhShow(null,null);},
+    {timeout:8000,enableHighAccuracy:true}
+  );
+}
+function nhShow(la,lo){
+  var res=nhList(),list=res.list.slice();
+  if(la!==null){list.forEach(function(h){h._d=dist(la,lo,h.lat,h.lng);});list.sort(function(a,b){return a._d-b._d;});}
+  var r=parseInt(res.color.slice(1,3),16),g=parseInt(res.color.slice(3,5),16),b=parseInt(res.color.slice(5,7),16);
+  document.getElementById('nhRH').style.cssText='border-radius:14px;padding:16px;margin-bottom:16px;background:rgba('+r+','+g+','+b+',.12);border:1px solid rgba('+r+','+g+','+b+',.3);display:flex;align-items:center;gap:12px;';
+  document.getElementById('nhRH').innerHTML='<div style="font-size:28px">🎯</div><div><div style="font-size:15px;font-weight:800;">'+res.label+'</div><div style="font-size:12px;color:var(--mu);margin-top:2px;">'+(la?'Sorted by your location':'GPS unavailable')+'</div></div>';
+  document.getElementById('nhRL').innerHTML=list.map(function(h,i){
+    var d=h._d?(h._d<1?Math.round(h._d*1000)+'m':h._d.toFixed(1)+' km'):'';
+    var badge=res.priority?'<span class="'+(res.priority==='Priority 1'?'p1b':'p2b')+'">'+res.priority+'</span>':'';
+    if(h.name==='Hazem Mebaireek Hospital')badge+='<span class="hzb" style="background:rgba(245,158,11,.15);color:#F59E0B;">👨 Male</span><span class="hzb" style="background:rgba(99,102,241,.15);color:#818CF8;">🌍 Non-GCC</span>';
+    var si=SHR.push({n:h.name,la:h.lat,lo:h.lng})-1;
+    return '<div class="nc">'+
+      '<div class="nr '+(i===0?'gd':'')+'">'+( i+1)+'</div>'+
+      '<div style="flex:1;"><div style="font-size:14px;font-weight:700;">'+h.name+'</div>'+
+      '<div style="font-size:11px;color:var(--mu);">'+d+'</div>'+badge+'</div>'+
+      '<div class="la2">'+
+        '<button class="bn" onclick="openMap('+h.lat+','+h.lng+')">🗺️</button>'+
+        '<button class="bs" onclick="shr('+si+')">↗️</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('nhBtn').disabled=false;
+  document.getElementById('nhBtn').textContent='📍 Find Nearest Hospital';
+  navStack.push('nearest-results');
+  showScreen('nearest-results');
+}
+
+// ═══════ INSTALL ═══════
+function showInstall(){document.getElementById('iM').style.display='flex';switchOS(/iphone|ipad|ipod/i.test(navigator.userAgent)?'ios':'android');}
+function hideInstall(){document.getElementById('iM').style.display='none';}
+function switchOS(os){
+  document.getElementById('iIG').style.display=os==='ios'?'block':'none';
+  document.getElementById('iAG').style.display=os==='android'?'block':'none';
+  document.getElementById('iIT').className=os==='ios'?'on':'off';
+  document.getElementById('iAT').className=os==='android'?'on':'off';
+}
+
+// ═══════ QR ═══════
+var qrDone=false;
+function showQR(){
+  document.getElementById('qM').style.display='flex';
+  if(qrDone)return;
+  var img=document.createElement('img');
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2F999route.netlify.app&bgcolor=ffffff&color=0d0d0d&ecc=H&margin=2';
+  img.style.cssText='width:200px;height:200px;border-radius:8px;';
+  img.onerror=function(){document.getElementById('qrC').innerHTML='<div style="padding:20px;font-size:12px;color:#333;">Open: 999route.netlify.app</div>';};
+  document.getElementById('qrC').appendChild(img);
+  qrDone=true;
+}
+function hideQR(){document.getElementById('qM').style.display='none';}
+
+// ═══════ SHARE / REPORT ═══════
+function shareApp(){
+  var url='https://999route.netlify.app';
+  var msg='🚑 *RapidRoute v1.0*\nEMS Navigation App — Qatar\n\n📍 Hubs & Spokes\n🏥 Hospitals & PEC\n🎯 Nearest Hospital finder\n\n👇 Open:\n'+url;
+  if(navigator.share){navigator.share({title:'RapidRoute',url:url}).catch(function(){});}
+  else{window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
+}
+function reportIssue(){
+  var msg='🐛 *RapidRoute Issue Report*\n\nHi Ahmad,\n\nI found an issue:\n\n[Describe here]';
+  window.open('https://wa.me/97466755942?text='+encodeURIComponent(msg),'_blank');
+}
+
+
+// ═══════ BOTTOM NAV ═══════
+var curTab = 'home';
+function bnSwitch(tab) {
+  curTab = tab;
+  document.querySelectorAll('.bnt').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('bn-'+tab).classList.add('on');
+  if(tab === 'home') {
+    navStack = ['home'];
+    showScreen('home');
+  } else if(tab === 'doses') {
+    navStack = ['doses'];
+    showScreen('doses');
+    document.getElementById('bBtn').classList.add('show');
+  } else if(tab === 'gcs') {
+    navStack = ['gcs'];
+    showScreen('gcs');
+    document.getElementById('bBtn').classList.add('show');
+  }
+}
+
+// ═══════ WAAFELSS CALCULATOR ═══════
+function getWeight(ageMonths) {
+  if (ageMonths <= 12) return (ageMonths * 0.5) + 4;
+  var ageYears = ageMonths / 12;
+  if (ageYears <= 5) return (ageYears * 2) + 8;
+  if (ageYears <= 14) return (ageYears * 3) + 7;
+  return null; // adult
+}
+
+function calcDoses() {
+  var ageVal = parseFloat(document.getElementById('dAge').value);
+  var unit   = document.getElementById('dUnit').value;
+  var wEl    = document.getElementById('dWeight');
+  var resEl  = document.getElementById('dResults');
+  var empEl  = document.getElementById('dEmpty');
+  var cardsEl= document.getElementById('dCards');
+
+  if (!ageVal || ageVal <= 0) {
+    wEl.style.display='none'; resEl.style.display='none'; empEl.style.display='block'; return;
+  }
+
+  var ageMonths = unit === 'years' ? ageVal * 12 : ageVal;
+  var ageYears  = ageMonths / 12;
+  var wt = getWeight(ageMonths);
+
+  if (!wt) {
+    wEl.style.display='block';
+    wEl.textContent = '⚠️ Age > 14 years — use adult protocols';
+    wEl.style.background='rgba(245,158,11,.1)';
+    wEl.style.borderColor='rgba(245,158,11,.3)';
+    wEl.style.color='#F59E0B';
+    resEl.style.display='none'; empEl.style.display='none'; return;
+  }
+
+  wt = Math.round(wt * 10) / 10;
+  wEl.style.display='block';
+  wEl.style.background='rgba(37,99,235,.1)';
+  wEl.style.borderColor='rgba(37,99,235,.3)';
+  wEl.style.color='#60A5FA';
+  wEl.textContent = '⚖️ Estimated Weight: ' + wt + ' kg';
+  resEl.style.display='block';
+  empEl.style.display='none';
+
+  var cards = [];
+
+  // ── A: Adrenaline (Cardiac Arrest) ──
+  var adr_mg = Math.round(wt * 0.01 * 100) / 100;
+  var adr_ml = Math.round(wt * 0.1 * 10) / 10;
+  cards.push(dCard('🔴','A — Adrenaline','Cardiac Arrest IV/IO','#DC2626',[
+    {l:'Dose',v:adr_mg+' mg'},
+    {l:'Volume (1:10,000)',v:adr_ml+' ml'},
+  ],'0.01 mg/kg | 0.1 ml/kg'));
+
+  // ── A: Amiodarone ──
+  var amio_mg = Math.round(wt * 5 * 10) / 10;
+  var amio_ml = Math.round(wt * 0.1 * 10) / 10;
+  cards.push(dCard('🟠','A — Amiodarone','Cardiac Arrest IV/IO','#EA580C',[
+    {l:'Dose',v:amio_mg+' mg'},
+    {l:'Volume',v:amio_ml+' ml'},
+  ],'5 mg/kg | 0.1 ml/kg'));
+
+  // ── F: Fluid ──
+  var fl10 = Math.round(wt * 10);
+  var fl20 = Math.round(wt * 20);
+  cards.push(dCard('🔵','F — Fluid','IV/IO Bolus','#2563EB',[
+    {l:'10 ml/kg',v:fl10+' ml'},
+    {l:'20 ml/kg',v:fl20+' ml'},
+    {l:'Repeat up to',v:'× 3 times'},
+  ],'10-20 ml/kg'));
+
+  // ── E: Energy ──
+  var e4  = Math.min(Math.round(wt * 4),  360);
+  var e10 = Math.min(Math.round(wt * 10), 360);
+  var e4note  = wt * 4  >= 360 ? ' (capped at 360J)' : '';
+  var e10note = wt * 10 >= 360 ? ' (capped at 360J)' : '';
+  cards.push(dCard('⚡','E — Energy','Defibrillation','#7C3AED',[
+    {l:'Initial (4 J/kg)',v:e4+' J'+e4note},
+    {l:'Max (10 J/kg)', v:e10+' J'+e10note},
+  ],'4 J/kg → escalate to 10 J/kg | Max 360 J'));
+
+  // ── L: Airway ──
+  var sga = ageMonths <= 3 ? 'Size 1 (2-5 kg)'
+          : wt <= 12 ? 'Size 1.5 (5-12 kg)'
+          : wt <= 25 ? 'Size 2 (10-25 kg)'
+          : 'Size 2.5 (25-35 kg)';
+  var etUncuffed = ageYears >= 1 ? (Math.round((ageYears/4 + 4)*10)/10).toString() : '—';
+  var etCuffed   = ageYears >= 1 ? (Math.round((ageYears/4 + 3.5)*10)/10).toString() : '—';
+  var etDepth    = ageYears >= 1 ? (Math.round((ageYears/2 + 12)*10)/10)+' cm' : '—';
+  cards.push(dCard('🟢','L — Airway','SGA & ET Tube','#16A34A',[
+    {l:'SGA Size',v:sga},
+    {l:'ET Uncuffed',v:etUncuffed},
+    {l:'ET Cuffed',v:etCuffed},
+    {l:'ET Depth',v:etDepth},
+  ],'(age÷4)+4 uncuffed | (age÷4)+3.5 cuffed'));
+
+  // ── S: Sugar D10 ──
+  var d10_arrest = ageYears >= 6 ? 50 : Math.min(Math.round(wt * 2.5), 50);
+  var d10_hypo   = Math.min(Math.round(wt * 5), 150);
+  cards.push(dCard('🟡','S — Sugar (D10)','10% Dextrose','#D97706',[
+    {l:'Cardiac Arrest',v:d10_arrest+' ml'},
+    {l:'Hypoglycaemia',v:d10_hypo+' ml (max 150)'},
+  ],'Arrest: wt×2.5 (max 50) | Hypo: wt×5 (max 150)'));
+
+  // ── S: Systolic BP ──
+  var sbp = Math.round(ageYears * 2 + 70);
+  cards.push(dCard('💓','S — Systolic BP','Minimum acceptable','#DB2777',[
+    {l:'Min Systolic',v:sbp+' mmHg'},
+  ],'(age × 2) + 70'));
+
+  // ── ANAPHYLAXIS ──
+  var anaAdr = ageYears < 1 ? '0.15 ml (use caution)'
+             : ageYears <= 5 ? '0.15 ml'
+             : ageYears <= 12 ? '0.3 ml'
+             : '0.5 ml';
+  cards.push(dCard('🚨','Anaphylaxis','Adrenaline IM (1:1000)','#DC2626',[
+    {l:'Volume',v:anaAdr},
+  ],'<6yr: 0.15ml | 6-12yr: 0.3ml | >12yr: 0.5ml'));
+
+  // ── NEBULIZER ──
+  var salb = ageYears < 6 ? '2.5 mg' : '5 mg';
+  var atro = ageYears < 6 ? '0.25 mg' : '0.5 mg';
+  cards.push(dCard('💨','Nebulizer','Asthma / Wheeze','#0891B2',[
+    {l:'Salbutamol',v:salb},
+    {l:'Atrovent',v:atro},
+  ],'<6yr: Salbutamol 2.5mg + Atrovent 0.25mg'));
+
+  // ── ADRENALINE NEBULIZER ──
+  var adrNeb = ageMonths < 12
+    ? (Math.round(wt * 0.5 * 10)/10)+' mg (0.5 mg/kg)'
+    : '5 mg';
+  cards.push(dCard('🌀','Adrenaline Neb','Croup','#7C3AED',[
+    {l:'Dose',v:adrNeb},
+  ],'<1yr: 0.5mg/kg | ≥1yr: 5mg fixed'));
+
+  cardsEl.innerHTML = cards.join('');
+}
+
+function dCard(icon, title, subtitle, color, rows, note) {
+  var r=parseInt(color.slice(1,3),16),g=parseInt(color.slice(3,5),16),b=parseInt(color.slice(5,7),16);
+  var rowsHTML = rows.map(function(row){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);">'+
+      '<span style="font-size:12px;color:var(--mu);">'+row.l+'</span>'+
+      '<span style="font-size:15px;font-weight:800;color:#fff;">'+row.v+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div style="background:rgba('+r+','+g+','+b+',.1);border:1px solid rgba('+r+','+g+','+b+',.3);border-radius:16px;padding:16px;margin-bottom:12px;">'+
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'+
+      '<span style="font-size:24px;">'+icon+'</span>'+
+      '<div><div style="font-size:15px;font-weight:900;color:#fff;">'+title+'</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:1px;">'+subtitle+'</div></div>'+
+    '</div>'+
+    rowsHTML+
+    '<div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:8px;font-style:italic;">'+note+'</div>'+
+  '</div>';
+}
+
+
+// ═══════ GCS CALCULATOR ═══════
+var gcsType = 'adult';
+var gcsE = 0, gcsV = 0, gcsM = 0;
+
+var GCS_DATA = {
+  adult: {
+    eye: [
+      {s:4, l:'Spontaneous'},
+      {s:3, l:'Reacts to speech'},
+      {s:2, l:'Reacts to pain'},
+      {s:1, l:'No response'},
+    ],
+    verbal: [
+      {s:5, l:'Orientated'},
+      {s:4, l:'Confused'},
+      {s:3, l:'Inappropriate words'},
+      {s:2, l:'Incomprehensible'},
+      {s:1, l:'No response'},
+    ],
+    motor: [
+      {s:6, l:'Obeys commands'},
+      {s:5, l:'Localises to pain'},
+      {s:4, l:'Withdraws from pain'},
+      {s:3, l:'Flexion response'},
+      {s:2, l:'Extension response'},
+      {s:1, l:'No response'},
+    ],
+  },
+  infant: {
+    eye: [
+      {s:4, l:'Spontaneous'},
+      {s:3, l:'Reacts to speech'},
+      {s:2, l:'Reacts to pain'},
+      {s:1, l:'No response'},
+    ],
+    verbal: [
+      {s:5, l:'Babbles, follows objects'},
+      {s:4, l:'Irritable, cries'},
+      {s:3, l:'Cries to pain'},
+      {s:2, l:'Moans and grunts'},
+      {s:1, l:'No response'},
+    ],
+    motor: [
+      {s:6, l:'Spontaneous'},
+      {s:5, l:'Localises to pain'},
+      {s:4, l:'Withdraws from pain'},
+      {s:3, l:'Flexion response'},
+      {s:2, l:'Extension response'},
+      {s:1, l:'No response'},
+    ],
+  },
+};
+
+function gcsSetType(type) {
+  gcsType = type;
+  gcsE = 0; gcsV = 0; gcsM = 0;
+  // Update tab styles
+  var adultEl  = document.getElementById('gpt-adult');
+  var infantEl = document.getElementById('gpt-infant');
+  if(type === 'adult') {
+    adultEl.style.background  = 'rgba(37,99,235,.2)';
+    adultEl.style.borderColor = '#2563EB';
+    adultEl.querySelector('div:last-child').style.color = '#fff';
+    infantEl.style.background  = 'var(--sf)';
+    infantEl.style.borderColor = 'var(--br)';
+    infantEl.querySelector('div:last-child').style.color = 'var(--mu)';
+  } else {
+    infantEl.style.background  = 'rgba(37,99,235,.2)';
+    infantEl.style.borderColor = '#2563EB';
+    infantEl.querySelector('div:last-child').style.color = '#fff';
+    adultEl.style.background  = 'var(--sf)';
+    adultEl.style.borderColor = 'var(--br)';
+    adultEl.querySelector('div:last-child').style.color = 'var(--mu)';
+  }
+  gcsRenderOptions();
+  gcsUpdateResult();
+}
+
+function gcsRenderOptions() {
+  var data = GCS_DATA[gcsType];
+  ['eye','verbal','motor'].forEach(function(cat) {
+    var el = document.getElementById('gcs-'+cat);
+    var selected = cat==='eye'?gcsE : cat==='verbal'?gcsV : gcsM;
+    el.innerHTML = '';
+    data[cat].forEach(function(opt) {
+      var isSel = opt.s === selected;
+      var div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:'+(isSel?'rgba(37,99,235,.2)':'var(--sf)')+';border:2px solid '+(isSel?'#2563EB':'var(--br)')+';border-radius:10px;padding:11px 14px;cursor:pointer;margin-bottom:6px;';
+      div.dataset.cat = cat;
+      div.dataset.score = opt.s;
+      div.innerHTML = '<span style="font-size:13px;font-weight:'+(isSel?'700':'500')+';color:'+(isSel?'#fff':'var(--tx)')+';">'+opt.l+'</span><span style="font-size:15px;font-weight:900;color:'+(isSel?'#60A5FA':'var(--mu)')+';">'+opt.s+'</span>';
+      div.addEventListener('click', function(){
+        gcsSelect(this.dataset.cat, parseInt(this.dataset.score));
+      });
+      el.appendChild(div);
+    });
+  });
+}
+
+function gcsSelect(cat, score) {
+  if(cat==='eye')    gcsE = score;
+  if(cat==='verbal') gcsV = score;
+  if(cat==='motor')  gcsM = score;
+  gcsRenderOptions();
+  gcsUpdateResult();
+}
+
+function gcsUpdateResult() {
+  var total = gcsE + gcsV + gcsM;
+  var resEl = document.getElementById('gcs-result');
+  if(gcsE===0 || gcsV===0 || gcsM===0) {
+    resEl.style.display='none'; return;
+  }
+  var severity, color, bg, emoji;
+  if(total >= 13)      { severity='Mild';     color='#22C55E'; bg='rgba(34,197,94,.12)';   emoji='🟢'; }
+  else if(total >= 9)  { severity='Moderate'; color='#F59E0B'; bg='rgba(245,158,11,.12)';  emoji='🟡'; }
+  else                 { severity='Severe';   color='#DC2626'; bg='rgba(220,38,38,.12)';   emoji='🔴'; }
+
+  resEl.style.display='block';
+  resEl.style.background=bg;
+  resEl.style.border='2px solid '+color;
+  resEl.innerHTML =
+    '<div style="font-size:36px;margin-bottom:8px;">'+emoji+'</div>'+
+    '<div style="font-size:42px;font-weight:900;color:'+color+';">'+total+'/15</div>'+
+    '<div style="font-size:18px;font-weight:700;color:#fff;margin-top:4px;">'+severity+' Impairment</div>'+
+    '<div style="display:flex;justify-content:center;gap:20px;margin-top:16px;">'+
+      '<div style="text-align:center;"><div style="font-size:11px;color:var(--mu);">Eye</div><div style="font-size:20px;font-weight:900;color:#60A5FA;">E'+gcsE+'</div></div>'+
+      '<div style="text-align:center;"><div style="font-size:11px;color:var(--mu);">Verbal</div><div style="font-size:20px;font-weight:900;color:#60A5FA;">V'+gcsV+'</div></div>'+
+      '<div style="text-align:center;"><div style="font-size:11px;color:var(--mu);">Motor</div><div style="font-size:20px;font-weight:900;color:#60A5FA;">M'+gcsM+'</div></div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--mu);margin-top:12px;">'+
+      'Mild: 13–15 &nbsp;|&nbsp; Moderate: 9–12 &nbsp;|&nbsp; Severe: ≤8'+
+    '</div>';
+}
+
+function gcsReset() {
+  gcsE=0; gcsV=0; gcsM=0;
+  gcsRenderOptions();
+  document.getElementById('gcs-result').style.display='none';
+}
+
+// Init GCS on load
+function gcsInit() {
+  gcsRenderOptions();
+}
+
+// ═══════ SPLASH → APP ═══════
+setTimeout(function(){
+  document.getElementById('splash').classList.add('hide');
+  setTimeout(function(){
+    document.getElementById('splash').style.display='none';
+    document.getElementById('app').classList.add('show');
+    init();
+    gcsInit();
+  },800);
+},4000);
+
+// Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    reg.addEventListener('updatefound',function(){
+      var sw=reg.installing;
+      sw.addEventListener('statechange',function(){
+        if(sw.state==='installed'&&navigator.serviceWorker.controller){
+          var b=document.createElement('div');
+          b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#2563EB;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-family:Inter,sans-serif;font-size:13px;font-weight:600;';
+          b.innerHTML='<span>🆕 New update available!</span><button onclick="window.location.reload()" style="background:rgba(255,255,255,.25);border:none;color:#fff;padding:6px 14px;border-radius:20px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Refresh</button>';
+          document.body.appendChild(b);
+        }
+      });
+    });
+  }).catch(function(){});
+}
+</script>
+</body>
+</html>
