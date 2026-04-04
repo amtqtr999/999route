@@ -212,6 +212,8 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
 .rt-clock-box{background:#111;border:2px solid rgba(220,38,38,.3);border-radius:18px;padding:20px;text-align:center;margin-bottom:12px;}
 .rt-total-lbl{font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
 .rt-clock{font-size:58px;font-weight:900;font-family:monospace;color:#FF5555;letter-spacing:3px;line-height:1;}
+.rt-clock-box.alert{border-color:rgba(220,38,38,.8);box-shadow:0 0 20px rgba(220,38,38,.3);animation:rtpulse .5s ease 3;}
+@keyframes rtpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.01);}}
 .rt-status{font-size:12px;color:var(--mu);margin-top:6px;}
 .rt-counters{display:flex;gap:8px;margin-bottom:12px;}
 .rt-counter{flex:1;background:#111;border:1px solid #222;border-radius:12px;padding:10px;text-align:center;}
@@ -428,8 +430,12 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
 
   <!-- ═══ RESUS TIMER ═══ -->
   <div class="screen" id="s-timer">
-    <div style="background:linear-gradient(135deg,#450a0a,#991b1b);border-radius:18px;padding:16px 20px;margin-bottom:12px;text-align:center;"><div style="font-size:30px;margin-bottom:4px;">⏱️</div><div style="font-size:17px;font-weight:900;">Resuscitation Timer</div><div style="font-size:11px;opacity:.7;margin-top:3px;">CPR cycle tracker</div></div>
-    <div class="rt-clock-box">
+    <div style="background:linear-gradient(135deg,#1a0000,#7f1d1d);border-radius:18px;padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;gap:14px;border:1px solid rgba(220,38,38,.3);">
+      <div style="font-size:38px;animation:lp 1s infinite;filter:drop-shadow(0 0 8px rgba(220,38,38,.6));">🫀</div>
+      <div><div style="font-size:17px;font-weight:900;letter-spacing:.5px;">Resuscitation Timer</div><div style="font-size:11px;opacity:.6;margin-top:2px;">CPR cycle tracker · 120 BPM guide</div></div>
+      <div id="rt-live-dot" style="width:10px;height:10px;background:#333;border-radius:50%;margin-left:auto;flex-shrink:0;"></div>
+    </div>
+    <div class="rt-clock-box" id="rt-clock-box">
       <div class="rt-total-lbl">Total Elapsed Time</div>
       <div class="rt-clock" id="rt-clock">00:00</div>
       <div class="rt-status" id="rt-status">Press Start to begin</div>
@@ -442,7 +448,7 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
       </div>
       <div class="rt-counter adr">
         <div class="rt-clbl">Adrenaline</div>
-        <div class="rt-cval red" id="rt-adr">04:00</div>
+        <div class="rt-cval red" id="rt-adr">--:--</div>
       </div>
       <div class="rt-counter chk">
         <div class="rt-clbl">Rhythm Check</div>
@@ -454,20 +460,26 @@ header{background:linear-gradient(135deg,#8B0000,#C0392B);padding:14px 16px;disp
       <button class="rt-reset" onclick="rtReset()">🔄 Reset</button>
     </div>
     <div class="rt-evtbtns">
-      <button onclick="rtLog('💉 Adrenaline given')"   style="background:rgba(220,38,38,.15);color:#FF5555;">💉 Adrenaline</button>
-      <button onclick="rtLog('⚡ Shock delivered')"    style="background:rgba(124,58,237,.15);color:#A78BFA;">⚡ Shock</button>
-      <button onclick="rtLog('💓 ROSC achieved')"      style="background:rgba(34,197,94,.15);color:#22C55E;">💓 ROSC</button>
+      <button id="rt-adr-btn" onclick="rtGiveAdrenaline()" style="background:rgba(220,38,38,.15);color:#FF5555;transition:background .2s;">💉 Adrenaline</button>
+      <button onclick="rtLog('🟠 Amiodarone given')"    style="background:rgba(234,88,12,.15);color:#FB923C;">🟠 Amiodarone</button>
+      <button onclick="rtLog('⚡ Shock delivered')"     style="background:rgba(124,58,237,.15);color:#A78BFA;">⚡ Shock</button>
+    </div>
+    <div class="rt-evtbtns">
+      <button onclick="rtLog('💧 IV/IO access')"        style="background:rgba(59,130,246,.15);color:#60A5FA;">💧 IV/IO</button>
+      <button onclick="rtLog('🫁 Airway secured')"      style="background:rgba(16,185,129,.15);color:#34D399;">🫁 Airway</button>
+      <button onclick="rtLog('💓 ROSC achieved')"       style="background:rgba(34,197,94,.15);color:#22C55E;">💓 ROSC</button>
     </div>
     <div class="rt-evtbtns" style="margin-bottom:10px;">
-      <button onclick="rtLog('🔄 CPR switched')"       style="background:rgba(245,158,11,.15);color:#F59E0B;">🔄 CPR</button>
-      <button onclick="rtLog('🚨 Re-arrested')"        style="background:rgba(239,68,68,.2);color:#FCA5A5;">🚨 Re-arrest</button>
-      <button onclick="rtLog('💊 Medication given')"   style="background:rgba(20,184,166,.15);color:#2DD4BF;">💊 Meds</button>
+      <button onclick="rtLog('🚨 Re-arrested')"         style="background:rgba(239,68,68,.2);color:#FCA5A5;">🚨 Re-arrest</button>
+      <button onclick="rtLog('💊 Medication given')"    style="background:rgba(20,184,166,.15);color:#2DD4BF;">💊 Meds</button>
+      <button onclick="rtCprTerminated()"               style="background:rgba(75,85,99,.25);color:#9CA3AF;border:1px solid rgba(75,85,99,.5);">🛑 CPR Terminated</button>
     </div>
     <div class="rt-log-hdr">
       <div class="stl" style="margin:0;">Event Log</div>
       <div style="display:flex;gap:6px;">
-        <button class="rt-export-btn" onclick="rtShare()" style="background:rgba(37,99,235,.2);color:#60A5FA;">↗️ Share</button>
-        <button class="rt-export-btn" onclick="rtCopy()"  style="background:rgba(245,158,11,.2);color:#F59E0B;">📋 Copy</button>
+        <button class="rt-export-btn" onclick="rtShare()"    style="background:rgba(37,99,235,.2);color:#60A5FA;">↗️ Share</button>
+        <button class="rt-export-btn" onclick="rtCopy()"     style="background:rgba(245,158,11,.2);color:#F59E0B;">📋 Copy</button>
+        <button class="rt-export-btn" onclick="rtDownloadPDF()" style="background:rgba(220,38,38,.2);color:#FF5555;">📄 PDF</button>
       </div>
     </div>
     <div class="rt-log" id="rt-log"><div class="rt-log-empty">— No events yet —</div></div>
@@ -977,7 +989,7 @@ function gcsInit(){gcsRender();}
 // RESUS TIMER
 // ═══════════════════════════════════════
 var rtRunning=false,rtInt=null,rtSec=0,rtCycleSec=0,rtCycleNum=1,rtTotalCycles=0;
-var rtAdrNext=240,rtChkNext=120;
+var rtAdrSec=null,rtAdrBlinkInt=null,rtChkNext=120;
 var rtEvents=[];
 var rtBeatCtx=null,rtBeatInt=null,rtWakeLock=null;
 var CYCLE_DUR=120;
@@ -985,27 +997,67 @@ var CYCLE_DUR=120;
 function rtBeatStart(){
   try{
     if(!rtBeatCtx)rtBeatCtx=new(window.AudioContext||window.webkitAudioContext)();
+    // Sharp loud click - cuts through noise
     rtBeatInt=setInterval(function(){
-      var o=rtBeatCtx.createOscillator(),g=rtBeatCtx.createGain();
-      o.connect(g);g.connect(rtBeatCtx.destination);
-      o.frequency.value=900;
-      g.gain.setValueAtTime(0.25,rtBeatCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001,rtBeatCtx.currentTime+0.06);
-      o.start(rtBeatCtx.currentTime);o.stop(rtBeatCtx.currentTime+0.06);
+      var t=rtBeatCtx.currentTime;
+      // Sharp attack beep - two-tone for clarity
+      var o1=rtBeatCtx.createOscillator();
+      var o2=rtBeatCtx.createOscillator();
+      var g=rtBeatCtx.createGain();
+      o1.connect(g);o2.connect(g);g.connect(rtBeatCtx.destination);
+      o1.type='square';o1.frequency.value=1200;
+      o2.type='square';o2.frequency.value=1800;
+      // Sharp loud attack, fast decay
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.8,t+0.005);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.07);
+      o1.start(t);o1.stop(t+0.07);
+      o2.start(t);o2.stop(t+0.07);
     },500);
   }catch(e){}
 }
 function rtBeatStop(){if(rtBeatInt){clearInterval(rtBeatInt);rtBeatInt=null;}}
 
-var rtAudio=null;
+var rtAudio=null, rtAudioReady=false;
+
+function rtAdrBlink(on){
+  var btn=document.getElementById('rt-adr-btn');
+  if(!btn)return;
+  if(on){
+    if(rtAdrBlinkInt)return;
+    rtAdrBlinkInt=setInterval(function(){
+      btn.style.background=btn.style.background==='rgba(220,38,38,.4)'?'rgba(220,38,38,.1)':'rgba(220,38,38,.4)';
+    },400);
+  } else {
+    clearInterval(rtAdrBlinkInt);rtAdrBlinkInt=null;
+    btn.style.background='rgba(220,38,38,.15)';
+  }
+}
+
+function rtGiveAdrenaline(){
+  rtLog('💉 Adrenaline given');
+  rtAdrSec=240; // reset to 4 min
+  rtAdrBlink(false);
+  document.getElementById('rt-adr').textContent='--:--';document.getElementById('rt-adr').style.color='#FF8888';
+  document.getElementById('rt-adr').style.color='#FF8888';
+}
+function rtUnlockAudio(){
+  // Must be called from a user gesture to unlock audio on iOS
+  try{
+    if(!rtAudio){rtAudio=new Audio('check-rhythm.mp3');rtAudio.preload='auto';}
+    rtAudio.volume=0;
+    rtAudio.play().then(function(){
+      rtAudio.pause();rtAudio.currentTime=0;rtAudio.volume=1;
+      rtAudioReady=true;
+    }).catch(function(){rtAudioReady=false;});
+  }catch(e){}
+}
 function rtSpeak(msg){
-  // Use real audio file for check rhythm
-  if(msg==='Check rhythm'){
+  if(msg==='Check rhythm' && rtAudio){
     try{
-      if(!rtAudio) rtAudio=new Audio('check-rhythm.mp3');
-      rtAudio.currentTime=0;
-      rtAudio.volume=1;
-      rtAudio.play().catch(function(){rtSpeakFallback(msg);});
+      rtAudio.currentTime=0;rtAudio.volume=1;
+      var p=rtAudio.play();
+      if(p) p.catch(function(){rtSpeakFallback(msg);});
       return;
     }catch(e){}
   }
@@ -1022,13 +1074,19 @@ function rtSpeakFallback(msg){
   }catch(e){}
 }
 
-async function rtWakeAcquire(){
-  try{if('wakeLock' in navigator){rtWakeLock=await navigator.wakeLock.request('screen');document.getElementById('s-timer').style.filter='brightness(1.1)';}}catch(e){}
+function rtWakeAcquire(){
+  try{
+    if('wakeLock' in navigator){
+      navigator.wakeLock.request('screen').then(function(lock){
+        rtWakeLock=lock;
+        document.getElementById('s-timer').style.filter='brightness(1.1)';
+      }).catch(function(){});
+    }
+  }catch(e){}
 }
 function rtWakeRelease(){
   try{if(rtWakeLock){rtWakeLock.release();rtWakeLock=null;}document.getElementById('s-timer').style.filter='';}catch(e){}
 }
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&rtRunning&&!rtWakeLock)rtWakeAcquire();});
 
 function rtStart(){
   if(rtRunning){
@@ -1037,6 +1095,7 @@ function rtStart(){
     document.getElementById('rt-status').textContent='Paused';
   } else {
     rtRunning=true;
+    rtUnlockAudio();
     if(rtSec===0)rtLog('🚨 Resuscitation started');
     rtInt=setInterval(rtTick,1000);
     rtBeatStart();rtWakeAcquire();
@@ -1048,17 +1107,28 @@ function rtStart(){
 function rtTick(){
   rtSec++;rtCycleSec++;
   document.getElementById('rt-clock').textContent=fmtTime(rtSec);
+  // Pulse live dot red
+  var dot=document.getElementById('rt-live-dot');
+  if(dot){dot.style.background=rtSec%2===0?'#DC2626':'#FF5555';dot.style.boxShadow=rtSec%2===0?'0 0 6px #DC2626':'';}
   // Cycle countdown
   var cLeft=CYCLE_DUR-rtCycleSec;
   if(cLeft<=0){rtTotalCycles++;rtCycleNum++;rtCycleSec=0;cLeft=CYCLE_DUR;document.getElementById('rt-cyclenum').textContent=rtCycleNum;document.getElementById('rt-cycles-total').textContent=rtTotalCycles+' done';rtLog('🔁 Cycle '+rtTotalCycles+' complete');}
   document.getElementById('rt-cycle').textContent=fmtTime(cLeft);
-  // Adrenaline
-  var aLeft=rtAdrNext-rtSec;
-  if(aLeft<=0){document.getElementById('rt-adr').textContent='⚠️ DUE';rtLog('⚠️ Adrenaline DUE');rtAdrNext+=240;rtSpeak('Adrenaline due');}
-  else{document.getElementById('rt-adr').textContent=fmtTime(aLeft);document.getElementById('rt-adr').className='rt-cval'+(aLeft<=30?' red':' red');}
+  // Adrenaline countdown (only after first dose)
+  if(rtAdrSec!==null){
+    rtAdrSec--;
+    var aEl=document.getElementById('rt-adr');
+    if(rtAdrSec<=0){
+      aEl.textContent='⚠️ DUE';aEl.style.color='#FF5555';
+      rtAdrBlink(true);
+    } else {
+      aEl.textContent=fmtTime(rtAdrSec);
+      aEl.style.color=rtAdrSec<=30?'#FF5555':'#FF8888';
+    }
+  }
   // Rhythm check — exactly every 2 min
   var chkLeft=rtChkNext-rtSec;
-  if(chkLeft<=0){document.getElementById('rt-chk').textContent='⚠️ DUE';rtLog('⚠️ Rhythm Check DUE');rtChkNext+=120;rtSpeak('Check rhythm');}
+  if(chkLeft<=0){document.getElementById('rt-chk').textContent='⚠️ DUE';rtLog('⚠️ Rhythm Check DUE');rtChkNext+=120;rtSpeak('Check rhythm');var box=document.getElementById('rt-clock-box');if(box){box.classList.add('alert');setTimeout(function(){box.classList.remove('alert');},1500);}}
   else{document.getElementById('rt-chk').textContent=fmtTime(chkLeft);document.getElementById('rt-chk').className='rt-cval'+(chkLeft<=15?' red':' blue');}
 }
 
@@ -1074,15 +1144,16 @@ function rtLog(msg){
 
 function rtReset(){
   rtRunning=false;clearInterval(rtInt);rtBeatStop();rtWakeRelease();
-  rtSec=0;rtCycleSec=0;rtCycleNum=1;rtTotalCycles=0;rtAdrNext=240;rtChkNext=120;rtEvents=[];
+  rtSec=0;rtCycleSec=0;rtCycleNum=1;rtTotalCycles=0;rtAdrSec=null;rtChkNext=120;rtEvents=[];rtAdrBlink(false);
   document.getElementById('rt-clock').textContent='00:00';
   document.getElementById('rt-cycle').textContent='02:00';
   document.getElementById('rt-cyclenum').textContent='1';
   document.getElementById('rt-cycles-total').textContent='0 done';
-  document.getElementById('rt-adr').textContent='04:00';
+  document.getElementById('rt-adr').textContent='--:--';document.getElementById('rt-adr').style.color='#FF8888';
   document.getElementById('rt-chk').textContent='02:00';
   document.getElementById('rt-startbtn').textContent='▶ Start';
   document.getElementById('rt-status').textContent='Press Start to begin';
+  var dot=document.getElementById('rt-live-dot');if(dot){dot.style.background='#333';dot.style.boxShadow='';}
   document.getElementById('rt-log').innerHTML='<div class="rt-log-empty">— No events yet —</div>';
 }
 
@@ -1092,11 +1163,44 @@ function rtGetText(){
   rtEvents.slice().reverse().forEach(function(e){lines.push(e.clock+'  ['+e.elapsed+']  '+e.msg);});
   return lines.join('\n');
 }
-function rtShare(){var t=rtGetText();if(navigator.share){navigator.share({title:'Resus Log',text:t}).catch(function(){rtCopy();});}else{rtCopy();}}
+function rtShare(){
+  var t=rtGetText();
+  if(navigator.share){
+    navigator.share({title:'RapidRoute Resus Log',text:t}).catch(function(){rtCopy();});
+  } else {
+    rtCopy();
+  }
+}
 function rtCopy(){
   var t=rtGetText();
-  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){showToast('📋 Log copied!');}).catch(function(){rtFallback(t);});}else{rtFallback(t);}}catch(e){rtFallback(t);}
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(function(){showToast('📋 Log copied!');}).catch(function(){rtFallback(t);});
+    } else {
+      rtFallback(t);
+    }
+  }catch(e){rtFallback(t);}
 }
+function rtCprTerminated(){
+  // Stop everything
+  rtRunning=false;
+  clearInterval(rtInt);
+  rtBeatStop();
+  rtWakeRelease();
+  rtAdrBlink(false);
+  var now=new Date();
+  var timeStr=fmt2(now.getHours())+':'+fmt2(now.getMinutes())+':'+fmt2(now.getSeconds());
+  rtLog('🛑 CPR TERMINATED — Total time: '+fmtTime(rtSec));
+  document.getElementById('rt-startbtn').textContent='▶ Start';
+  document.getElementById('rt-status').textContent='CPR Terminated at '+timeStr;
+  document.getElementById('rt-status').style.color='#9CA3AF';
+  // Flash clock box grey
+  var box=document.getElementById('rt-clock-box');
+  if(box){box.style.borderColor='rgba(75,85,99,.5)';box.style.boxShadow='';}
+  var dot=document.getElementById('rt-live-dot');
+  if(dot){dot.style.background='#4B5563';dot.style.boxShadow='';}
+}
+
 function rtFallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast('📋 Log copied!');}catch(e){showToast('⚠️ Copy failed');}document.body.removeChild(ta);}
 
 // ═══════════════════════════════════════
@@ -1230,6 +1334,109 @@ function hideQR(){document.getElementById('qM').style.display='none';}
 function shareApp(){var url='https://amtqtr999.github.io/999route/';var msg='🚑 *RapidRoute v1.0*\nEMS Navigation App — Qatar\n\n📍 Hubs & Spokes\n🏥 Hospitals & PEC\n🎯 Nearest Hospital\n💊 Doses (WAAFELSS)\n📊 Scores (QEWS/APGAR/GCS)\n⏱️ Resus Timer\n🌐 Translate (7 languages)\n\n'+url;if(navigator.share){navigator.share({title:'RapidRoute',url:url}).catch(function(){});}else{window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}}
 function reportIssue(){window.open('https://wa.me/97466755942?text='+encodeURIComponent('🐛 *RapidRoute Issue*\n\nHi Ahmad,\n\nI found an issue:\n\n[Describe here]'),'_blank');}
 
+
+function rtDownloadPDF(){
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB');
+  var events = rtEvents.slice().reverse();
+
+  // Build color map
+  function evtColor(msg){
+    if(msg.indexOf('Adrenaline given')>-1) return '#DC2626';
+    if(msg.indexOf('Amiodarone')>-1)       return '#EA580C';
+    if(msg.indexOf('Shock')>-1)            return '#7C3AED';
+    if(msg.indexOf('ROSC')>-1)             return '#16A34A';
+    if(msg.indexOf('Re-arrest')>-1)        return '#DC2626';
+    if(msg.indexOf('Rhythm Check')>-1)     return '#2563EB';
+    if(msg.indexOf('Terminated')>-1)       return '#4B5563';
+    if(msg.indexOf('started')>-1)          return '#DC2626';
+    if(msg.indexOf('Cycle')>-1)            return '#6B7280';
+    if(msg.indexOf('IV')>-1)              return '#2563EB';
+    if(msg.indexOf('Airway')>-1)           return '#059669';
+    return '#6B7280';
+  }
+
+  function countEvt(kw){ return rtEvents.filter(function(e){return e.msg.indexOf(kw)>-1;}).length; }
+
+  var rows = events.map(function(e){
+    var color = evtColor(e.msg);
+    var msg = e.msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<tr><td style="color:#60A5FA;font-family:monospace;white-space:nowrap;">'+e.clock+'</td>'+
+      '<td style="color:#9CA3AF;font-family:monospace;white-space:nowrap;">['+e.elapsed+']</td>'+
+      '<td><span style="display:inline-block;width:4px;height:14px;background:'+color+';border-radius:2px;margin-right:8px;vertical-align:middle;"></span>'+msg+'</td></tr>';
+  }).join('');
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+    '<title>Resus Log</title>'+
+    '<style>'+
+      'body{font-family:Arial,sans-serif;margin:0;padding:0;background:#fff;color:#1a1a1a;}'+
+      '.header{background:#8B0000;color:#fff;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;}'+
+      '.header h1{margin:0;font-size:22px;letter-spacing:1px;}'+
+      '.header p{margin:4px 0 0;font-size:11px;opacity:.8;}'+
+      '.header-right{text-align:right;font-size:11px;opacity:.8;}'+
+      '.info{background:#F9FAFB;border-bottom:1px solid #E5E7EB;padding:16px 24px;display:flex;gap:40px;}'+
+      '.info-item label{display:block;font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}'+
+      '.info-item span{font-size:16px;font-weight:700;}'+
+      '.summary{padding:16px 24px;display:flex;gap:12px;}'+
+      '.sum-box{flex:1;border-radius:8px;padding:12px;text-align:center;}'+
+      '.sum-box .num{font-size:28px;font-weight:900;color:#fff;}'+
+      '.sum-box .lbl{font-size:10px;color:rgba(255,255,255,.8);margin-top:2px;}'+
+      '.section{padding:0 24px 24px;}'+
+      '.section h2{font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;}'+
+      'table{width:100%;border-collapse:collapse;font-size:12px;}'+
+      'thead tr{background:#1F2937;color:#fff;}'+
+      'thead th{padding:8px 10px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.5px;}'+
+      'tbody tr:nth-child(even){background:#F9FAFB;}'+
+      'tbody td{padding:7px 10px;border-bottom:1px solid #E5E7EB;}'+
+      '.empty{text-align:center;color:#9CA3AF;padding:20px;font-style:italic;}'+
+      '.footer{border-top:2px solid #8B0000;padding:12px 24px;display:flex;justify-content:space-between;font-size:10px;color:#9CA3AF;margin-top:16px;}'+
+      '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'+
+    '</style></head><body>'+
+    '<div class="header">'+
+      '<div><h1>RAPIDROUTE</h1><p>Resuscitation Log Report</p></div>'+
+      '<div class="header-right"><div>HMCAS — Qatar Ambulance</div><div>Confidential Medical Record</div></div>'+
+    '</div>'+
+    '<div class="info">'+
+      '<div class="info-item"><label>Date &amp; Time</label><span>'+dateStr+'</span></div>'+
+      '<div class="info-item"><label>Total Duration</label><span>'+fmtTime(rtSec)+'</span></div>'+
+      '<div class="info-item"><label>CPR Cycles</label><span>'+rtTotalCycles+'</span></div>'+
+    '</div>'+
+    '<div class="summary">'+
+      '<div class="sum-box" style="background:#DC2626;"><div class="num">'+countEvt('Adrenaline given')+'</div><div class="lbl">Adrenaline</div></div>'+
+      '<div class="sum-box" style="background:#EA580C;"><div class="num">'+countEvt('Amiodarone')+'</div><div class="lbl">Amiodarone</div></div>'+
+      '<div class="sum-box" style="background:#7C3AED;"><div class="num">'+countEvt('Shock')+'</div><div class="lbl">Shocks</div></div>'+
+      '<div class="sum-box" style="background:#16A34A;"><div class="num">'+countEvt('ROSC')+'</div><div class="lbl">ROSC</div></div>'+
+    '</div>'+
+    '<div class="section">'+
+      '<h2>Event Timeline</h2>'+
+      '<table><thead><tr><th>CLOCK</th><th>ELAPSED</th><th>EVENT</th></tr></thead>'+
+      '<tbody>'+(rows||'<tr><td colspan="3" class="empty">No events recorded</td></tr>')+'</tbody>'+
+      '</table>'+
+    '</div>'+
+    '<div class="footer">'+
+      '<span>RapidRoute v1.0 — Developed by Ahmad Tawalbeh</span>'+
+      '<span>Generated: '+dateStr+'</span>'+
+    '</div>'+
+    '</body></html>';
+
+  // Use blob URL - works on iOS Safari, Android Chrome
+  try {
+    var blob = new Blob([html],{type:'text/html'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href=url;
+    a.target='_blank';
+    a.download='ResusLog_'+now.getFullYear()+fmt2(now.getMonth()+1)+fmt2(now.getDate())+'.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
+    showToast('📄 Log downloaded!');
+  } catch(err){
+    showToast('⚠️ Download failed');
+  }
+}
+
+
 // ═══════════════════════════════════════
 // SPLASH → APP
 // ═══════════════════════════════════════
@@ -1240,6 +1447,9 @@ setTimeout(function(){
     document.getElementById('app').classList.add('show');
     init();
     ppRender();
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='visible'&&rtRunning&&!rtWakeLock) rtWakeAcquire();
+    });
   },800);
 },4000);
 
@@ -1251,7 +1461,7 @@ if('serviceWorker' in navigator){
         if(sw.state==='installed'&&navigator.serviceWorker.controller){
           var b=document.createElement('div');
           b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#2563EB;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-family:Inter,sans-serif;font-size:13px;font-weight:600;';
-          b.innerHTML='<span>🆕 New update available!</span><button onclick="window.location.reload()" style="background:rgba(255,255,255,.25);border:none;color:#fff;padding:6px 14px;border-radius:20px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Refresh</button>';
+          b.innerHTML='<span>🆕 New update!</span><button onclick="window.location.reload()" style="background:rgba(255,255,255,.25);border:none;color:#fff;padding:6px 14px;border-radius:20px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Refresh</button>';
           document.body.appendChild(b);
         }
       });
